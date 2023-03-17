@@ -1,10 +1,12 @@
+from ariadne import load_schema_from_path, make_executable_schema, graphql_sync, snake_case_fallback_resolvers, \
+    ObjectType
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from ariadne import load_schema_from_path, make_executable_schema, \
-    graphql_sync, snake_case_fallback_resolvers, ObjectType
-from module_queries import resolve_module, resolve_modules, resolve_module_skills, resolve_create_module, resolve_update_module, resolve_delete_module, resolve_create_module_skill, resolve_update_module_skill, resolve_delete_module_skill
-from module_models import db
 
+from module_models import db
+from module_queries import resolve_module, resolve_modules, resolve_module_skills, resolve_create_module, \
+    resolve_update_module, resolve_delete_module, resolve_create_module_skill, resolve_update_module_skill, \
+    resolve_delete_module_skill
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/module'

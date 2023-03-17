@@ -16,6 +16,7 @@ def resolve_module(obj, info, module_id):
         }
     return payload
 
+
 def resolve_modules(obj, info):
     try:
         modules = [module.to_dict() for module in Module.query.all()]
