@@ -1,0 +1,25 @@
+schema {
+    query: Query
+}
+
+type Test {
+    id: ID!
+    description: String!
+}
+
+type TestResult {
+    success: Boolean!
+    errors: [String]
+    test: Test
+}
+
+type TestsResult {
+    success: Boolean!
+    errors: [String]
+    tests: [Test]
+}
+
+type Query {
+    listTests: TestsResult!
+    getTest(id: ID!): TestResult!
+}
