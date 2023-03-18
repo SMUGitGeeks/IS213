@@ -75,10 +75,9 @@ type DeleteResult {
 We use the 'Query' type to define all of the available queries
 """
 type Query {
-    modules: ModulesResult!
-    module_skills: ModuleSkillsResult!
-    module(module_id: String!): ModuleResult!
-    module_skill(module_id: String!, skill_name: String!): ModuleSkillResult!
+    get_all_modules: ModulesResult!
+    get_module(module_id: String!): ModuleResult!
+    get_module_skills(module_id: String!): ModuleSkillsResult!
 }
 
 

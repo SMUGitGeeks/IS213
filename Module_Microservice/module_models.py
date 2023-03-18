@@ -8,7 +8,7 @@ db = SQLAlchemy()
 class Module(db.Model):
     __tablename__ = 'Module'
     module_id = db.Column(db.String(10), primary_key=True, nullable=False)
-    module_name = db.Column(db.String(50), nullable=False)
+    module_name = db.Column(db.String(100), nullable=False)
 
     def to_dict(self):
         return {
@@ -22,7 +22,7 @@ class Module(db.Model):
 class ModuleSkill(db.Model):
     __tablename__ = 'ModuleSkill'
     module_id = db.Column(db.String(10), db.ForeignKey('Module.module_id'), primary_key=True, nullable=False)
-    skill_name = db.Column(db.String(50), primary_key=True, nullable=False)
+    skill_name = db.Column(db.String(100), primary_key=True, nullable=False)
     module = db.relationship("Module", backref=backref("Module", uselist=False))
 
     def to_dict(self):

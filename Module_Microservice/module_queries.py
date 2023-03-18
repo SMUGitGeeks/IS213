@@ -2,6 +2,8 @@ from module_models import Module, ModuleSkill, db
 
 
 # We need to have a resolver for each query and mutation we have defined in module.graphql
+
+#get 1 specific module
 def resolve_module(obj, info, module_id):
     try:
         module = Module.query.get(module_id)
@@ -16,7 +18,7 @@ def resolve_module(obj, info, module_id):
         }
     return payload
 
-
+#get all modules
 def resolve_modules(obj, info):
     try:
         modules = [module.to_dict() for module in Module.query.all()]
@@ -31,7 +33,7 @@ def resolve_modules(obj, info):
         }
     return payload
 
-
+#create a module
 def resolve_create_module(obj, info, module_id, module_name):
     try:
         module = Module(
@@ -50,7 +52,7 @@ def resolve_create_module(obj, info, module_id, module_name):
         }
     return payload
 
-
+#update a module
 def resolve_update_module(obj, info, module_id, module_name):
     try:
         module = Module.query.get(module_id)
@@ -68,7 +70,7 @@ def resolve_update_module(obj, info, module_id, module_name):
         }
     return payload
 
-
+#delete a module
 def resolve_delete_module(obj, info, module_id):
     try:
         module = Module.query.get(module_id)
@@ -83,10 +85,10 @@ def resolve_delete_module(obj, info, module_id):
         }
     return payload
 
-
-def resolve_module_skills(obj, info):
+#get all module skills
+def resolve_module_skills(obj, info, module_id):
     try:
-        module_skills = [module_skill.to_dict() for module_skill in ModuleSkill.query.all()]
+        module_skills = [module_skill.to_dict() for module_skill in ModuleSkill.query.get(module_id).all]
         payload = {
             "success": True,
             "module_skills": module_skills
@@ -98,7 +100,7 @@ def resolve_module_skills(obj, info):
         }
     return payload
 
-
+#create a module skill for a module
 def resolve_create_module_skill(obj, info, module_id, skill_name):
     try:
         module_skill = ModuleSkill(
@@ -117,7 +119,7 @@ def resolve_create_module_skill(obj, info, module_id, skill_name):
         }
     return payload
 
-
+#update a module skill for a module
 def resolve_update_module_skill(obj, info, module_id, skill_name):
     try:
         module_skill = ModuleSkill.query.get(module_id, skill_name)
@@ -136,7 +138,7 @@ def resolve_update_module_skill(obj, info, module_id, skill_name):
         }
     return payload
 
-
+#delete a module skill for a module
 def resolve_delete_module_skill(obj, info, module_id, module_skill):
     try:
         module_skill = ModuleSkill.query.get(module_id, module_skill)
