@@ -9,7 +9,7 @@ from job_queries import resolve_job, resolve_jobs, resolve_job_skills, resolve_c
     resolve_delete_job_skill
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/job'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/job'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.app_context().push()
 db.init_app(app)
@@ -19,8 +19,8 @@ CORS(app)
 
 # We need to assign the resolvers to the corresponding fields in the Query and Mutation types
 query = ObjectType("Query")
-query.set_field("job", resolve_job)
-query.set_field("jobs", resolve_jobs)
+query.set_field("get_job_by_id", resolve_job)
+query.set_field("get_all_jobs", resolve_jobs)
 query.set_field("job_skills", resolve_job_skills)
 mutation = ObjectType("Mutation")
 mutation.set_field("create_job", resolve_create_job)
@@ -46,3 +46,6 @@ def graphql_server():
     )
     status_code = 200 if success else 400
     return jsonify(result), status_code
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5002, debug=True)

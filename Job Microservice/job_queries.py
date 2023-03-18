@@ -32,10 +32,10 @@ def resolve_jobs(obj, info):
     return payload
 
 
-def resolve_create_job(obj, info, job_id, job_name):
+def resolve_create_job(obj, info, job_id, job_role, job_description, job_company):
     try:
         job = Job(
-            job_id=job_id, job_name=job_name
+            job_id=job_id, job_role=job_role, job_description=job_description, job_company=job_company
         )
         db.session.add(job)
         db.session.commit()
@@ -51,11 +51,13 @@ def resolve_create_job(obj, info, job_id, job_name):
     return payload
 
 
-def resolve_update_job(obj, info, job_id, job_name):
+def resolve_update_job(obj, info, job_id, job_role, job_description, job_company):
     try:
         job = Job.query.get(job_id)
         if job:
-            job.job_name = job_name
+            job.job_role = job_role
+            job.job_description = job_description
+            job.job_company = job_company
             db.session.commit()
             payload = {
                 "success": True,

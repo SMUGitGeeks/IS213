@@ -8,12 +8,16 @@ db = SQLAlchemy()
 class Job(db.Model):
     __tablename__ = 'Job'
     job_id = db.Column(db.String(10), primary_key=True, nullable=False)
-    job_name = db.Column(db.String(50), nullable=False)
+    job_role = db.Column(db.String(50), nullable=False)
+    job_company = db.Column(db.String(50), nullable=False)
+    job_description = db.Column(db.String(255), nullable=False)
 
     def to_dict(self):
         return {
             "job_id": self.job_id,
-            "job_name": self.job_name
+            "job_role": self.job_role,
+            "job_company": self.job_company,
+            "job_description": self.job_description
         }
 
 

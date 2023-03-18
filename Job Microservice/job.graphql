@@ -15,7 +15,9 @@ column_name: var_type
 """
 type Job {
     job_id: String!
-    job_name: String!
+    job_role: String!
+    job_description: String!
+    job_company: String!
 }
 
 
@@ -75,9 +77,9 @@ type DeleteResult {
 We use the 'Query' type to define all of the available queries
 """
 type Query {
-    jobs: JobsResult!
+    get_all_jobs: JobsResult!
     job_skills: JobSkillsResult!
-    job(Job_id: String!): JobResult!
+    get_job_by_id(job_id: String!): JobResult!
     job_skill(job_id: String!, skill_name: String!): JobSkillResult!
 }
 
@@ -86,9 +88,9 @@ type Query {
 We use the 'Mutation' type to define all of the available mutations
 """
 type Mutation {
-    create_job(Job_id: String!, job_name: String!): JobResult!
+    create_job(job_id: String!, job_role: String!, job_description: String!, job_company: String!): JobResult!
     create_job_skill(job_id: String!, skill_name: String!): JobSkillResult!
-    update_job(job_id: String!, job_name: String!): JobResult!
+    update_job(job_id: String!, job_role: String!, job_description: String!, job_company: String!): JobResult!
     update_job_skill(job_id: String!, skill_name: String!): JobSkillResult!
     delete_job(job_id: String!): DeleteResult!
     delete_job_skill(job_id: String!, skill_name: String!): DeleteResult!
