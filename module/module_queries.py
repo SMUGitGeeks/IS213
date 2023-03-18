@@ -19,13 +19,21 @@ def resolve_module(obj, info, module_id):
     return payload
 
 #get all modules
-def resolve_modules(obj, info):
+def resolve_modules(obj, info, skill_name=None):
     try:
-        modules = [module.to_dict() for module in Module.query.all()]
-        payload = {
-            "success": True,
-            "modules": modules
-        }
+        if skill_name:
+            # get modules from Module table based on skill_name from ModuleSkill table
+            modules = [module.to_dict() for module in Module.query.join(ModuleSkill).filter(ModuleSkill.skill_name == skill_name).all()]
+            payload = {
+                "success": True,
+                "modules": modules
+            }
+        else:
+            modules = [module.to_dict() for module in Module.query.all()]
+            payload = {
+                "success": True,
+                "modules": modules
+            }
     except Exception as error:
         payload = {
             "success": False,
