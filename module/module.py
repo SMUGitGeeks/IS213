@@ -20,7 +20,7 @@ CORS(app)
 # We need to assign the resolvers to the corresponding fields in the Query and Mutation types
 query = ObjectType("Query")
 query.set_field("get_module", resolve_module)
-query.set_field("get_all_modules", resolve_modules)
+query.set_field("get_modules", resolve_modules)
 query.set_field("get_module_skills", resolve_module_skills)
 mutation = ObjectType("Mutation")
 mutation.set_field("create_module", resolve_create_module)
