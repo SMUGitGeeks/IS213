@@ -52,7 +52,7 @@ type StudentModulesResult {
 type Query {
     students: StudentsResult!
     student_modules: StudentModulesResult!
-    student(student_id: Int!): Student!
+    student(student_id: Int!): StudentResult!
     student_module(student_id: Int!, module_id: String!): StudentModuleResult!
 }
 
@@ -69,9 +69,9 @@ Mutations
 type Mutation {
     create_student(student_id: Int!, student_name: String!, email: String!, is_subscribed: Boolean!, is_graduated: Boolean!): StudentResult!
     update_student(student_id: Int!, student_name: String, email: String, is_subscribed: Boolean, is_graduated: Boolean): StudentResult!
-    deleteStudent(student_id: Int!): DeleteResult!
+    delete_student(student_id: Int!): DeleteResult!
 
-    create_student(student_id: Int!, module_id: String!): StudentModuleResult!
-    update_student(student_id: Int!, module_id: String!): StudentModuleResult!
-    deleteStudent(student_id: Int!, module_id: String!): DeleteResult!
+    create_student_module(student_id: Int!, module_id: String!): StudentModuleResult!
+    update_student_module(student_id: Int!, module_id: String!): StudentModuleResult!
+    delete_student_module(student_id: Int!, module_id: String!): DeleteResult!
 }
