@@ -1,0 +1,95 @@
+"""
+Query is used to fetch a single and all items
+Mutation is used to create, update and delete items
+"""
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+
+"""
+The 'Module' type represents the Module table in our database
+The pairing is as follows
+column_name: var_type
+"""
+type Module {
+    module_id: String!
+    module_name: String!
+}
+
+
+"""
+The 'ModuleSkill' type represents the ModuleSkill table in our database
+"""
+type ModuleSkill {
+    module_id: String!
+    skill_name: String!
+}
+
+
+"""
+The 'ModuleResult' type represents the result of a single Module query
+"""
+type ModuleResult {
+    success: Boolean!
+    errors: [String]
+    module: Module
+}
+
+
+type ModuleSkillResult {
+    success: Boolean!
+    errors: [String]
+    module_skill: ModuleSkill
+}
+
+
+"""
+The 'ModulesResult' type represents the result of a query for all Modules
+"""
+type ModulesResult {
+    success: Boolean!
+    errors: [String]
+    modules: [Module]
+}
+
+
+type ModuleSkillsResult {
+    success: Boolean!
+    errors: [String]
+    module_skills: [ModuleSkill]
+}
+
+
+"""
+The 'DeleteResult' type represents the result of a delete operation
+"""
+type DeleteResult {
+    success: Boolean!
+    errors: [String]
+}
+
+
+"""
+We use the 'Query' type to define all of the available queries
+"""
+type Query {
+    modules: ModulesResult!
+    module_skills: ModuleSkillsResult!
+    module(module_id: String!): ModuleResult!
+    module_skill(module_id: String!, skill_name: String!): ModuleSkillResult!
+}
+
+
+"""
+We use the 'Mutation' type to define all of the available mutations
+"""
+type Mutation {
+    create_module(module_id: String!, module_name: String!): ModuleResult!
+    create_module_skill(module_id: String!, skill_name: String!): ModuleSkillResult!
+    update_module(module_id: String!, module_name: String!): ModuleResult!
+    update_module_skill(module_id: String!, skill_name: String!): ModuleSkillResult!
+    delete_module(module_id: String!): DeleteResult!
+    delete_module_skill(module_id: String!, skill_name: String!): DeleteResult!
+}
