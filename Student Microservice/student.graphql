@@ -1,0 +1,77 @@
+"""
+Query is used to fetch a single and all items
+Mutation is used to create, update and delete items
+"""
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Student {
+    student_id: Int!
+    student_name: String!
+    email: String!
+    is_subscribed: Boolean!
+    is_graduated: Boolean!
+}
+
+type StudentModule {
+    student_id: Int!
+    module_id: String!
+}
+
+"""
+Querys
+"""
+
+type StudentResult {
+    success: Boolean!
+    errors: [String]
+    student: Student
+}
+
+type StudentModuleResult {
+    success: Boolean!
+    errors: [String]
+    student_module: StudentModule
+}
+
+type StudentsResult {
+    success: Boolean!
+    errors: [String]
+    students: [Student]
+}
+
+
+type StudentModulesResult {
+    success: Boolean!
+    errors: [String]
+    student_modules: [StudentModule]
+}
+
+type Query {
+    students: StudentsResult!
+    student_modules: StudentModulesResult!
+    student(student_id: Int!): Student!
+    student_module(student_id: Int!, module_id: String!): StudentModuleResult!
+}
+
+
+type DeleteResult {
+    success: Boolean!
+    errors: [String]
+}
+
+"""
+Mutations
+"""
+
+type Mutation {
+    create_student(student_id: Int!, student_name: String!, email: String!, is_subscribed: Boolean!, is_graduated: Boolean!): StudentResult!
+    update_student(student_id: Int!, student_name: String, email: String, is_subscribed: Boolean, is_graduated: Boolean): StudentResult!
+    deleteStudent(student_id: Int!): DeleteResult!
+
+    create_student(student_id: Int!, module_id: String!): StudentModuleResult!
+    update_student(student_id: Int!, module_id: String!): StudentModuleResult!
+    deleteStudent(student_id: Int!, module_id: String!): DeleteResult!
+}
