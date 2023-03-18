@@ -1,0 +1,95 @@
+"""
+Query is used to fetch a single and all items
+Mutation is used to create, update and delete items
+"""
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+
+"""
+The 'Job' type represents the Job table in our database
+The pairing is as follows
+column_name: var_type
+"""
+type Job {
+    job_id: String!
+    job_name: String!
+}
+
+
+"""
+The 'JobSkill' type represents the JobSkill table in our database
+"""
+type JobSkill {
+    job_id: String!
+    skill_name: String!
+}
+
+
+"""
+The 'JobResult' type represents the result of a single Job query
+"""
+type JobResult {
+    success: Boolean!
+    errors: [String]
+    job: Job
+}
+
+
+type JobSkillResult {
+    success: Boolean!
+    errors: [String]
+    job_skill: JobSkill
+}
+
+
+"""
+The 'JobsResult' type represents the result of a query for all Jobs
+"""
+type JobsResult {
+    success: Boolean!
+    errors: [String]
+    jobs: [Job]
+}
+
+
+type JobSkillsResult {
+    success: Boolean!
+    errors: [String]
+    job_skills: [JobSkill]
+}
+
+
+"""
+The 'DeleteResult' type represents the result of a delete operation
+"""
+type DeleteResult {
+    success: Boolean!
+    errors: [String]
+}
+
+
+"""
+We use the 'Query' type to define all of the available queries
+"""
+type Query {
+    jobs: JobsResult!
+    job_skills: JobSkillsResult!
+    job(Job_id: String!): JobResult!
+    job_skill(job_id: String!, skill_name: String!): JobSkillResult!
+}
+
+
+"""
+We use the 'Mutation' type to define all of the available mutations
+"""
+type Mutation {
+    create_job(Job_id: String!, job_name: String!): JobResult!
+    create_job_skill(job_id: String!, skill_name: String!): JobSkillResult!
+    update_job(job_id: String!, job_name: String!): JobResult!
+    update_job_skill(job_id: String!, skill_name: String!): JobSkillResult!
+    delete_job(job_id: String!): DeleteResult!
+    delete_job_skill(job_id: String!, skill_name: String!): DeleteResult!
+}
