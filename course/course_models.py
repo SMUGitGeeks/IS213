@@ -8,8 +8,8 @@ db = SQLAlchemy()
 class Course(db.Model):
     __tablename__ = 'Course'
     course_id = db.Column(db.String(10), primary_key=True, nullable=False)
-    course_name = db.Column(db.String(50), nullable=False)
-    course_link = db.Column(db.String(200), nullable=False)
+    course_name = db.Column(db.String(200), nullable=False)
+    course_link = db.Column(db.String(400), nullable=False)
 
     def to_dict(self):
         return {

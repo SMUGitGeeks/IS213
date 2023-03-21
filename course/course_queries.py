@@ -2,6 +2,9 @@ from course_models import Course, CourseSkill, db
 
 
 # We need to have a resolver for each query and mutation we have defined in course.graphql
+
+########################################## Course ##########################################
+# get 1 specific course based on course_id
 def resolve_course(obj, info, course_id):
     try:
         course = Course.query.get(course_id)
@@ -16,14 +19,22 @@ def resolve_course(obj, info, course_id):
         }
     return payload
 
-
-def resolve_courses(obj, info):
+# get all courses
+def resolve_courses(obj, info, skill_name=None):
     try:
-        courses = [course.to_dict() for course in Course.query.all()]
-        payload = {
-            "success": True,
-            "courses": courses
-        }
+        if skill_name:
+            # get courses from Course table based on skill_name from CourseSkill table
+            courses = [course.to_dict() for course in Course.query.join(CourseSkill).filter(CourseSkill.skill_name == skill_name).all()]
+            payload = {
+                "success": True,
+                "courses": courses
+            }
+        else:
+            courses = [course.to_dict() for course in Course.query.all()]
+            payload = {
+                "success": True,
+                "courses": courses
+            }
     except Exception as error:
         payload = {
             "success": False,
@@ -31,7 +42,7 @@ def resolve_courses(obj, info):
         }
     return payload
 
-
+# create a course
 def resolve_create_course(obj, info, course_id, course_name, course_link):
     try:
         course = Course(
@@ -50,7 +61,7 @@ def resolve_create_course(obj, info, course_id, course_name, course_link):
         }
     return payload
 
-
+# update a course
 def resolve_update_course(obj, info, course_id, course_name, course_link):
     try:
         course = Course.query.get(course_id)
@@ -69,7 +80,7 @@ def resolve_update_course(obj, info, course_id, course_name, course_link):
         }
     return payload
 
-
+# delete a course
 def resolve_delete_course(obj, info, course_id):
     try:
         course = Course.query.get(course_id)
@@ -85,6 +96,10 @@ def resolve_delete_course(obj, info, course_id):
     return payload
 
 
+
+########################################## CourseSkill ##########################################
+
+# get all course skills
 def resolve_course_skills(obj, info):
     try:
         course_skills = [course_skill.to_dict() for course_skill in CourseSkill.query.all()]
@@ -99,7 +114,7 @@ def resolve_course_skills(obj, info):
         }
     return payload
 
-
+# get skills based on course_id
 def resolve_course_skills_by_id(obj, info, course_id):
     try:
         # course_skills = CourseSkill.query.filter_by(course_id=course_id)
