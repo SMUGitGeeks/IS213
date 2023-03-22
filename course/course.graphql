@@ -62,13 +62,6 @@ type CourseSkillsResult {
     course_skills: [CourseSkill]
 }
 
-
-type CourseSkillsByIdResult {
-    success: Boolean!
-    errors: [String]
-    course_skills: [CourseSkill]
-}
-
 """
 The 'DeleteResult' type represents the result of a delete operation
 """
@@ -82,11 +75,11 @@ type DeleteResult {
 We use the 'Query' type to define all of the available queries
 """
 type Query {
-    get_courses(skill_name: String): CoursesResult!
-    get_course_skills: CourseSkillsResult!
+    
     get_course(course_id: String!): CourseResult!
+    get_courses(skill_name: String): CoursesResult!
     get_course_skill(course_id: String!, skill_name: String!): CourseSkillResult!
-    get_course_skills_by_id(course_id: String!): CourseSkillsByIdResult!
+    get_course_skills(course_id: String): CourseSkillsResult!
     
 }
 

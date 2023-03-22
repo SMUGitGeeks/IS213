@@ -100,30 +100,21 @@ def resolve_delete_course(obj, info, course_id):
 ########################################## CourseSkill ##########################################
 
 # get all course skills
-def resolve_course_skills(obj, info):
+def resolve_course_skills(obj, info, course_id=None):
     try:
-        course_skills = [course_skill.to_dict() for course_skill in CourseSkill.query.all()]
-        payload = {
-            "success": True,
-            "course_skills": course_skills
-        }
-    except Exception as error:
-        payload = {
-            "success": False,
-            "errors": [str(error)]
-        }
-    return payload
-
-# get skills based on course_id
-def resolve_course_skills_by_id(obj, info, course_id):
-    try:
-        # course_skills = CourseSkill.query.filter_by(course_id=course_id)
-        # course_skills = [course_skill.to_dict() for course_skill in CourseSkill.query.all()]
-        course_skills = [course_skill.to_dict() for course_skill in CourseSkill.query.filter_by(course_id=course_id).all()]
-        payload = {
-            "success": True,
-            "course_skills": course_skills
-        }
+        # get all course skills based on courseid
+        if course_id:
+            course_skills = [course_skill.to_dict() for course_skill in CourseSkill.query.filter_by(course_id=course_id).all()]
+            payload = {
+                "success": True,
+                "course_skills": course_skills
+            }
+        else:
+            course_skills = [course_skill.to_dict() for course_skill in CourseSkill.query.all()]
+            payload = {
+                "success": True,
+                "course_skills": course_skills
+            }
     except Exception as error:
         payload = {
             "success": False,
@@ -132,6 +123,7 @@ def resolve_course_skills_by_id(obj, info, course_id):
     return payload
 
 
+# create a course skill
 def resolve_create_course_skill(obj, info, course_id, skill_name):
     try:
         course_skill = CourseSkill(
@@ -150,7 +142,7 @@ def resolve_create_course_skill(obj, info, course_id, skill_name):
         }
     return payload
 
-
+# update a course skill
 def resolve_update_course_skill(obj, info, course_id, skill_name):
     try:
         course_skill = CourseSkill.query.get(course_id, skill_name)
@@ -169,7 +161,7 @@ def resolve_update_course_skill(obj, info, course_id, skill_name):
         }
     return payload
 
-
+# delete a course skill
 def resolve_delete_course_skill(obj, info, course_id, course_skill):
     try:
         course_skill = CourseSkill.query.get(course_id, course_skill)

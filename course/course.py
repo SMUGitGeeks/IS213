@@ -6,7 +6,7 @@ from flask_cors import CORS
 from course_models import db
 from course_queries import resolve_course, resolve_courses, resolve_course_skills, resolve_create_course, \
     resolve_update_course, resolve_delete_course, resolve_create_course_skill, resolve_update_course_skill, \
-    resolve_delete_course_skill, resolve_course_skills_by_id
+    resolve_delete_course_skill
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/course'
@@ -22,7 +22,6 @@ query = ObjectType("Query")
 query.set_field("get_course", resolve_course)
 query.set_field("get_courses", resolve_courses)
 query.set_field("get_course_skills", resolve_course_skills)
-query.set_field("get_course_skills_by_id", resolve_course_skills_by_id)
 mutation = ObjectType("Mutation")
 mutation.set_field("create_course", resolve_create_course)
 mutation.set_field("update_course", resolve_update_course)
