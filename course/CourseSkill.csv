@@ -1,0 +1,37 @@
+course_id,skill_name
+0,Agile Methodologies
+0,Technical Support
+0,Project Management
+1,Deep Learning
+1,Machine Learning
+1,Data Analysis
+2,Cloud Infrastructure
+2,Cloud Security
+2,Cloud Management
+3,Java
+3,Software Development
+3,Data Structures
+4,Data Visualization
+4,Statistics
+4,Troubleshooting
+5,Cybersecurity
+5,Penetration Testing
+5,Vulnerability Assessments
+6,Operating Systems
+6,Troubleshooting
+6,Service Management
+7,Artificial Intelligence
+7,Ethics in AI
+7,AI Governance
+8,HTML
+8,CSS
+8,Web Development
+9,Network Infrastructure
+9,Routing Protocols
+9,Defect Documentation
+10,User Experience Design
+10,User Interface Design
+10,Wireframing
+11,Software Testing
+11,Test Plans
+11,Cloud Computing
