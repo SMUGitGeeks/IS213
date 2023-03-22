@@ -42,12 +42,6 @@ type StudentsResult {
     students: [Student]
 }
 
-type StudentsModulesResult {
-    success: Boolean!
-    errors: [String]
-    students_modules: [StudentModule]
-}
-
 type StudentModulesResult {
     success: Boolean!
     errors: [String]
@@ -55,11 +49,10 @@ type StudentModulesResult {
 }
 
 type Query {
-    get_all_students: StudentsResult!
-    get_all_students_modules: StudentsModulesResult!
+    get_students: StudentsResult!
     get_student(student_id: Int!): StudentResult!
-    get_one_student_module(student_id: Int!, module_id: String!): StudentModuleResult!
-    get_student_modules(student_id: Int!): StudentModulesResult!
+    get_student_module(student_id: Int!, module_id: String!): StudentModuleResult!
+    get_student_modules(student_id: Int): StudentModulesResult!
 }
 
 
