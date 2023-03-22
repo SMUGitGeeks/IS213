@@ -18,7 +18,7 @@ def resolve_module(obj, info, module_id):
         }
     return payload
 
-#get all modules
+#get all modules (get modules base on skills)
 def resolve_modules(obj, info, skill_name=None):
     try:
         if skill_name:
@@ -93,14 +93,21 @@ def resolve_delete_module(obj, info, module_id):
         }
     return payload
 
-#get all module skills
-def resolve_module_skills(obj, info, module_id):
+#get all module skills (get skills base on modules)
+def resolve_module_skills(obj, info, module_id=None):
     try:
-        module_skills = [module_skill.to_dict() for module_skill in ModuleSkill.query.get(module_id).all]
-        payload = {
-            "success": True,
-            "module_skills": module_skills
-        }
+        if module_id:
+            module_skills = [module_skill.to_dict() for module_skill in ModuleSkill.query.filter_by(module_id=module_id).all()]
+            payload = {
+                "success": True,
+                "module_skills": module_skills
+            }
+        else:
+            module_skills = [module_skill.to_dict() for module_skill in ModuleSkill.query.all()]
+            payload = {
+                "success": True,
+                "module_skills": module_skills
+            }
     except Exception as error:
         payload = {
             "success": False,
