@@ -49,8 +49,4 @@ def graphql_server():
     return jsonify(result), status_code
 
 if __name__ == '__main__':
-<<<<<<< HEAD:Module Microservice/module.py
-    app.run(port=5000, debug=True)
-=======
     app.run(host="0.0.0.0", port=5000, debug=True)
->>>>>>> main:module/module.py
