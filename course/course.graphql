@@ -1,0 +1,97 @@
+"""
+Query is used to fetch a single and all items
+Mutation is used to create, update and delete items
+"""
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+
+"""
+The 'Course' type represents the Course table in our database
+The pairing is as follows
+column_name: var_type
+"""
+type Course {
+    course_id: String!
+    course_name: String!
+    course_link: String!
+}
+
+
+"""
+The 'CourseSkill' type represents the CourseSkill table in our database
+"""
+type CourseSkill {
+    course_id: String!
+    skill_name: String!
+}
+
+
+"""
+The 'CourseResult' type represents the result of a single Course query
+"""
+type CourseResult {
+    success: Boolean!
+    errors: [String]
+    course: Course
+}
+
+
+type CourseSkillResult {
+    success: Boolean!
+    errors: [String]
+    course_skill: CourseSkill
+}
+
+
+"""
+The 'CoursesResult' type represents the result of a query for all Courses
+"""
+type CoursesResult {
+    success: Boolean!
+    errors: [String]
+    courses: [Course]
+}
+
+
+type CourseSkillsResult {
+    success: Boolean!
+    errors: [String]
+    course_skills: [CourseSkill]
+}
+
+"""
+The 'DeleteResult' type represents the result of a delete operation
+"""
+type DeleteResult {
+    success: Boolean!
+    errors: [String]
+}
+
+
+"""
+We use the 'Query' type to define all of the available queries
+"""
+type Query {
+    
+    get_course(course_id: String!): CourseResult!
+    get_courses(skill_name: String): CoursesResult!
+    get_course_skill(course_id: String!, skill_name: String!): CourseSkillResult!
+    get_course_skills(course_id: String): CourseSkillsResult!
+    
+}
+
+
+"""
+We use the 'Mutation' type to define all of the available mutations
+"""
+type Mutation {
+    create_course(course_id: String!, course_name: String!, course_link: String!): CourseResult!
+    create_course_skill(course_id: String!, skill_name: String!): CourseSkillResult!
+    update_course(course_id: String!, course_name: String!, course_link: String!): CourseResult!
+    update_course_skill(course_id: String!, skill_name: String!): CourseSkillResult!
+    delete_course(course_id: String!): DeleteResult!
+    delete_course_skill(course_id: String!, skill_name: String!): DeleteResult!
+}
