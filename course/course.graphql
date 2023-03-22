@@ -90,8 +90,8 @@ We use the 'Mutation' type to define all of the available mutations
 type Mutation {
     create_course(course_id: String!, course_name: String!, course_link: String!): CourseResult!
     create_course_skill(course_id: String!, skill_name: String!): CourseSkillResult!
-    update_course(course_id: String!, course_name: String!, course_link: String!): CourseResult!
-    update_course_skill(course_id: String!, skill_name: String!): CourseSkillResult!
+    update_course(course_id: String!, course_name: String, course_link: String): CourseResult!
+    update_course_skill(course_id: String!, new_skill: String!, old_skill: String!): CourseSkillResult!
     delete_course(course_id: String!): DeleteResult!
     delete_course_skill(course_id: String!, skill_name: String!): DeleteResult!
 }
