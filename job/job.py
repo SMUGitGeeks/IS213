@@ -19,9 +19,9 @@ CORS(app)
 
 # We need to assign the resolvers to the corresponding fields in the Query and Mutation types
 query = ObjectType("Query")
-query.set_field("get_job_by_id", resolve_job)
-query.set_field("get_all_jobs", resolve_jobs)
-query.set_field("job_skills", resolve_job_skills)
+query.set_field("get_job", resolve_job)
+query.set_field("get_jobs", resolve_jobs)
+query.set_field("get_job_skills", resolve_job_skills)
 mutation = ObjectType("Mutation")
 mutation.set_field("create_job", resolve_create_job)
 mutation.set_field("update_job", resolve_update_job)

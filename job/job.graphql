@@ -77,10 +77,10 @@ type DeleteResult {
 We use the 'Query' type to define all of the available queries
 """
 type Query {
-    get_all_jobs: JobsResult!
+    get_jobs: JobsResult!
     job_skills: JobSkillsResult!
-    get_job_by_id(job_id: String!): JobResult!
-    job_skill(job_id: String!, skill_name: String!): JobSkillResult!
+    get_job(job_id: String!): JobResult!
+    get_job_skills(job_id: String!, skill_name: String!): JobSkillResult!
 }
 
 

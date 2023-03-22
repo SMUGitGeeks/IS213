@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "66b2f698-5e5c-4b8b-8506-c442905f8a1e",
-		"name": "Job Microservice",
+		"name": "job",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "12606116"
 	},
@@ -45,7 +45,7 @@
 				"body": {
 					"mode": "graphql",
 					"graphql": {
-						"query": "query { get_all_jobs { jobs { job_id job_role job_description job_company } } }"
+						"query": "query { get_jobs { jobs { job_id job_role job_description job_company } } }"
 					}
 				}
 			},
@@ -60,7 +60,7 @@
 				"body": {
 					"mode": "graphql",
 					"graphql": {
-						"query": "query { get_job_by_id(job_id: \"0\") { job { job_id job_role job_description job_company } } }"
+						"query": "query { get_job(job_id: \"0\") { job { job_id job_role job_description job_company } } }"
 					}
 				}
 			},
