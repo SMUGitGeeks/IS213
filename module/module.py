@@ -20,9 +20,9 @@ CORS(app)
 
 # We need to assign the resolvers to the corresponding fields in the Query and Mutation types
 query = ObjectType("Query")
-query.set_field("module", resolve_module)
-query.set_field("modules", resolve_modules)
-query.set_field("module_skills", resolve_module_skills)
+query.set_field("get_module", resolve_module)
+query.set_field("get_modules", resolve_modules)
+query.set_field("get_module_skills", resolve_module_skills)
 mutation = ObjectType("Mutation")
 mutation.set_field("create_module", resolve_create_module)
 mutation.set_field("update_module", resolve_update_module)
@@ -49,4 +49,8 @@ def graphql_server():
     return jsonify(result), status_code
 
 if __name__ == '__main__':
+<<<<<<< HEAD:Module Microservice/module.py
     app.run(port=5000, debug=True)
+=======
+    app.run(host="0.0.0.0", port=5000, debug=True)
+>>>>>>> main:module/module.py
