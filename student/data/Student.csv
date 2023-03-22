@@ -1,0 +1,11 @@
+student_id,student_name,email,is_graduated,is_subscribed
+12345678,John Smith,john_smith_2022@scis.smu.edu.sg,0,1
+23456789,Sarah Lee,sarah_lee_2023@scis.smu.edu.sg,0,1
+31238871,Katherine Wong,katherine_wong_2022@scis.smu.edu.sg,1,1
+34567890,Michael Chen,michael_chen_2024@scis.smu.edu.sg,0,0
+45678901,Emily Wang,emily_wang_2022@scis.smu.edu.sg,1,1
+56789012,William Tan,william_tan_2023@scis.smu.edu.sg,0,0
+67890123,Jessica Ng,jessica_ng_2024@scis.smu.edu.sg,0,1
+78901234,David Lim,david_lim_2022@scis.smu.edu.sg,1,1
+89012345,Samantha Koh,samantha_koh_2023@scis.smu.edu.sg,0,0
+90123456,Benjamin Tan,benjamin_tan_2024@scis.smu.edu.sg,0,1
