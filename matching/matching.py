@@ -149,3 +149,8 @@ def invoke_error_microservice(json, microservice):
             "data": {"${microservice}_result": json},
             "message": "${microservice} failed, sent for error handling."
         }
+
+
+if __name__ == "__main__":
+    print("This is flask " + os.path.basename(__file__) + " for matching a job...")
+    app.run(host="0.0.0.0", port=5005, debug=True)
