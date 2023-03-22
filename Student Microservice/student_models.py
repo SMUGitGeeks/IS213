@@ -17,10 +17,10 @@ class Student(db.Model):
     def to_dict(self):
         return {
             "student_id": self.student_id, 
-            "name": self.student_name, 
+            "student_name": self.student_name, 
             "email": self.email, 
-            "grad?": self.is_graduated, 
-            "sub?": self.is_subscribed}
+            "is_graduated": self.is_graduated, 
+            "is_subscribed": self.is_subscribed}
 
 
 # Define the ModuleSkill model and its fields
@@ -34,5 +34,5 @@ class StudentModule(db.Model):
     def to_dict(self):
         return {
             "student_id": self.student_id,
-            "student_module": self.module_id
+            "module_id": self.module_id
         }

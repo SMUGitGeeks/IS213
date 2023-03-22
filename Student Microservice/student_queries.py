@@ -22,7 +22,7 @@ def resolve_students(obj, info):
         students = [student.to_dict() for student in Student.query.all()]
         payload = {
             "success": True,
-            "student": students
+            "students": students
         }
     except Exception as error:
         payload = {
@@ -84,9 +84,10 @@ def resolve_delete_student(obj, info, student_id):
     return payload
 
 
-def resolve_student_modules(obj, info):
+def resolve_student_modules(obj, info, student_id):
     try:
-        student_modules = [student_module.to_dict() for student_module in StudentModule.query.all()]
+        student_modules = StudentModule.query.filter_by(student_id = student_id)
+        print(student_modules)
         payload = {
             "success": True,
             "student_modules": student_modules
@@ -98,6 +99,33 @@ def resolve_student_modules(obj, info):
         }
     return payload
 
+def resolve_students_modules(obj, info):
+    try:
+        students_modules = [student_module.to_dict() for student_module in StudentModule.query.all()]
+        payload = {
+            "success": True,
+            "students_modules": students_modules
+        }
+    except Exception as error:
+        payload = {
+            "success": False,
+            "errors": [str(error)]
+        }
+    return payload
+
+def resolve_student_module(obj, info, student_id, module_id):
+    try:
+        student_module = StudentModule.query.get((student_id, module_id))
+        payload = {
+            "success": True,
+            "student_module": student_module
+        }
+    except Exception as error:
+        payload = {
+            "success": False,
+            "errors": [str(error)]
+        }
+    return payload
 
 def resolve_create_student_module(obj, info, student_id, module_id):
     try:
