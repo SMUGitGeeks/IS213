@@ -65,6 +65,51 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Jobskill - Create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "localhost:5002/graphql",
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation { create_job_skill(job_id: \"0\", skill_name: \"CSS\") { success errors } }"
+					}
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Jobskill - Delete a jobskill given id and skill name",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "localhost:5002/graphql",
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "mutation { delete_job_skill(job_id: \"0\", skill_name: \"CSS\") { success errors } }"
+					}
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Jobskill - Get all jobskills given job_id",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "localhost:5002/graphql",
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "query { get_job_skills(job_id: \"0\") { job_skills { job_id skill_name } } }"
+					}
+				}
+			},
+			"response": []
 		}
 	]
 }

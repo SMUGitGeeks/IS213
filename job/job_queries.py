@@ -73,6 +73,9 @@ def resolve_update_job(obj, info, job_id, job_role, job_description, job_company
 
 def resolve_delete_job(obj, info, job_id):
     try:
+        job_skills = JobSkill.query.filter_by(job_id = job_id)
+        for job_skill in job_skills:
+            db.session.delete(job_skill)
         job = Job.query.get(job_id)
         db.session.delete(job)
         db.session.commit()
@@ -86,9 +89,27 @@ def resolve_delete_job(obj, info, job_id):
     return payload
 
 
-def resolve_job_skills(obj, info):
+# def resolve_job_skills(obj, info):
+#     try:
+#         job_skills = [job_skill.to_dict() for job_skill in JobSkill.query.all()]
+#         payload = {
+#             "success": True,
+#             "job_skills": job_skills
+#         }
+#     except Exception as error:
+#         payload = {
+#             "success": False,
+#             "errors": [str(error)]
+#         }
+#     return payload
+
+##################
+
+def resolve_job_skills(obj, info, job_id=None):
     try:
-        job_skills = [job_skill.to_dict() for job_skill in JobSkill.query.all()]
+        job_skills = JobSkill.query.all()
+        if job_id:
+            job_skills = [job_skill.to_dict() for job_skill in JobSkill.query.filter_by(job_id = job_id).all]
         payload = {
             "success": True,
             "job_skills": job_skills
@@ -99,6 +120,22 @@ def resolve_job_skills(obj, info):
             "errors": [str(error)]
         }
     return payload
+
+def resolve_job_skill(obj, info, job_id, skill_name):
+    try:
+        job_skill = JobSkill.query.get((job_id, skill_name))
+        payload = {
+            "success": True,
+            "job_skill": job_skill
+        }
+    except Exception as error:
+        payload = {
+            "success": False,
+            "errors": [str(error)]
+        }
+    return payload
+
+#########################################
 
 
 def resolve_create_job_skill(obj, info, job_id, skill_name):
@@ -139,9 +176,9 @@ def resolve_update_job_skill(obj, info, job_id, skill_name):
     return payload
 
 
-def resolve_delete_job_skill(obj, info, job_id, job_skill):
+def resolve_delete_job_skill(obj, info, job_id, skill_name):
     try:
-        job_skill = JobSkill.query.get(job_id, job_skill)
+        job_skill = JobSkill.query.get(job_id, skill_name)
         db.session.delete(job_skill)
         db.session.commit()
         payload = {"success": True}
