@@ -135,11 +135,12 @@ def resolve_create_module_skill(obj, info, module_id, skill_name):
     return payload
 
 #update a module skill for a module
-def resolve_update_module_skill(obj, info, module_id, skill_name):
+def resolve_update_module_skill(obj, info, module_id, old_skill, new_skill):
     try:
-        module_skill = ModuleSkill.query.get(module_id, skill_name)
-        if module_skill:
-            module_skill.module_skill = module_skill
+        #update old skill to new skill
+        module_skill = ModuleSkill.query.filter_by(module_id=module_id, skill_name=old_skill).first()
+        if module_skill and new_skill:
+            module_skill.skill_name = new_skill
 
             db.session.commit()
             payload = {
@@ -154,9 +155,9 @@ def resolve_update_module_skill(obj, info, module_id, skill_name):
     return payload
 
 #delete a module skill for a module
-def resolve_delete_module_skill(obj, info, module_id, module_skill):
+def resolve_delete_module_skill(obj, info, module_id, skill_name):
     try:
-        module_skill = ModuleSkill.query.get(module_id, module_skill)
+        module_skill = ModuleSkill.query.filter_by(module_id=module_id, skill_name=skill_name).first()
         db.session.delete(module_skill)
         db.session.commit()
         payload = {"success": True}

@@ -88,7 +88,7 @@ type Mutation {
     create_module(module_id: String!, module_name: String!): ModuleResult!
     create_module_skill(module_id: String!, skill_name: String!): ModuleSkillResult!
     update_module(module_id: String!, module_name: String!): ModuleResult!
-    update_module_skill(module_id: String!, skill_name: String!): ModuleSkillResult!
+    update_module_skill(module_id: String!, old_skill: String!, new_skill: String!): ModuleSkillResult!
     delete_module(module_id: String!): DeleteResult!
     delete_module_skill(module_id: String!, skill_name: String!): DeleteResult!
 }
