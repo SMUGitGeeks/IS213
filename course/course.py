@@ -2,14 +2,15 @@ from ariadne import load_schema_from_path, make_executable_schema, graphql_sync,
     ObjectType
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-
+from os import environ
 from course_models import db
 from course_queries import resolve_course, resolve_courses, resolve_course_skills, resolve_create_course, \
     resolve_update_course, resolve_delete_course, resolve_create_course_skill, resolve_update_course_skill, \
     resolve_delete_course_skill
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/course'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/course'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.app_context().push()
 db.init_app(app)
