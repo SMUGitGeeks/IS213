@@ -62,17 +62,18 @@ def resolve_create_course(obj, info, course_id, course_name, course_link):
     return payload
 
 # update a course
-def resolve_update_course(obj, info, course_id, course_name, course_link):
+def resolve_update_course(obj, info, course_id, course_name = None, course_link = None):
     try:
         course = Course.query.get(course_id)
-        if course:
+        if course_name: 
             course.course_name = course_name
+        if course_link:    
             course.course_link = course_link
-            db.session.commit()
-            payload = {
-                "success": True,
-                "course": course.to_dict()
-            }
+        db.session.commit()
+        payload = {
+            "success": True,
+            "course": course.to_dict()
+        }
     except Exception as error:
         payload = {
             "success": False,
@@ -84,6 +85,9 @@ def resolve_update_course(obj, info, course_id, course_name, course_link):
 def resolve_delete_course(obj, info, course_id):
     try:
         course = Course.query.get(course_id)
+        courseskills = CourseSkill.query.filter_by(course_id=course_id).all()
+        for courseskill in courseskills:
+            db.session.delete(courseskill)
         db.session.delete(course)
         db.session.commit()
         payload = {"success": True}
@@ -143,17 +147,16 @@ def resolve_create_course_skill(obj, info, course_id, skill_name):
     return payload
 
 # update a course skill
-def resolve_update_course_skill(obj, info, course_id, skill_name):
+def resolve_update_course_skill(obj, info, course_id, new_skill, old_skill):
+    # payload = {"success": False, "errors": [str(error)]}
     try:
-        course_skill = CourseSkill.query.get(course_id, skill_name)
-        if course_skill:
-            course_skill.course_skill = course_skill
-
-            db.session.commit()
-            payload = {
-                "success": True,
-                "course_skill": course_skill.to_dict()
-            }
+        course_skill = CourseSkill.query.get((course_id, old_skill))
+        course_skill.skill_name = new_skill
+        db.session.commit()
+        payload = {
+            "success": True,
+            "course_skill": course_skill.to_dict()
+        }
     except Exception as error:
         payload = {
             "success": False,
@@ -162,9 +165,9 @@ def resolve_update_course_skill(obj, info, course_id, skill_name):
     return payload
 
 # delete a course skill
-def resolve_delete_course_skill(obj, info, course_id, course_skill):
+def resolve_delete_course_skill(obj, info, course_id, skill_name):
     try:
-        course_skill = CourseSkill.query.get(course_id, course_skill)
+        course_skill = CourseSkill.query.get((course_id, skill_name))
         db.session.delete(course_skill)
         db.session.commit()
         payload = {"success": True}

@@ -77,7 +77,7 @@ We use the 'Query' type to define all of the available queries
 type Query {
     get_modules(skill_name: String): ModulesResult!
     get_module(module_id: String!): ModuleResult!
-    get_module_skills(module_id: String!): ModuleSkillsResult!
+    get_module_skills(module_id: String): ModuleSkillsResult!
 }
 
 
@@ -88,7 +88,7 @@ type Mutation {
     create_module(module_id: String!, module_name: String!): ModuleResult!
     create_module_skill(module_id: String!, skill_name: String!): ModuleSkillResult!
     update_module(module_id: String!, module_name: String!): ModuleResult!
-    update_module_skill(module_id: String!, skill_name: String!): ModuleSkillResult!
+    update_module_skill(module_id: String!, old_skill: String!, new_skill: String!): ModuleSkillResult!
     delete_module(module_id: String!): DeleteResult!
     delete_module_skill(module_id: String!, skill_name: String!): DeleteResult!
 }

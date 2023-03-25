@@ -32,10 +32,14 @@ def resolve_students(obj, info):
     return payload
 
 
-def resolve_create_student(obj, info, student_id, module_id):
+def resolve_create_student(obj, info, student_id, student_name, email, is_graduated, is_subscribed):
     try:
         student = Student(
-            student_id=student_id, module_id=module_id
+            student_id=student_id, 
+            student_name = student_name,
+            email = email,
+            is_graduated = is_graduated,
+            is_subscribed = is_subscribed
         )
         db.session.add(student)
         db.session.commit()
@@ -51,11 +55,22 @@ def resolve_create_student(obj, info, student_id, module_id):
     return payload
 
 
-def resolve_update_student(obj, info, student_id, module_id):
+def resolve_update_student(obj, info, student_id, student_name=None, email=None, is_graduated=None, is_subscribed=None):
     try:
         student = Student.query.get(student_id)
         if student:
-            student.module_id = module_id
+            if student_name:
+                student.student_name = student_name
+
+            if email:
+                student.email = email
+
+            if (is_graduated != None):
+                student.is_graduated = is_graduated
+
+            if (is_subscribed != None):
+                student.is_subscribed = is_subscribed
+            
             db.session.commit()
             payload = {
                 "success": True,
@@ -84,7 +99,7 @@ def resolve_delete_student(obj, info, student_id):
     return payload
 
 
-def resolve_student_modules(obj, info, student_id):
+def resolve_student_modules(obj, info, student_id=None):
     try:
         student_modules = StudentModule.query.all()
         if student_id:
@@ -116,14 +131,14 @@ def resolve_student_module(obj, info, student_id, module_id):
 
 def resolve_create_student_module(obj, info, student_id, module_id):
     try:
-        module_id = StudentModule(
+        student_module = StudentModule(
             student_id=student_id, module_id=module_id
         )
-        db.session.add(module_id)
+        db.session.add(student_module)
         db.session.commit()
         payload = {
             "success": True,
-            "module_id": module_id.to_dict()
+            "student_module": student_module.to_dict()
         }
     except Exception as error:
         payload = {
@@ -133,16 +148,16 @@ def resolve_create_student_module(obj, info, student_id, module_id):
     return payload
 
 
-def resolve_update_student_module(obj, info, student_id, module_id):
+def resolve_update_student_module(obj, info, student_id, old_module_id, new_module_id):
     try:
-        module_id = StudentModule.query.get(student_id, module_id)
-        if module_id:
-            module_id.module_id = module_id
+        student_module = StudentModule.query.get((student_id, old_module_id))
+        if student_module:
+            student_module.module_id = new_module_id
 
             db.session.commit()
             payload = {
                 "success": True,
-                "module_id": module_id.to_dict()
+                "student_module": student_module.to_dict()
             }
     except Exception as error:
         payload = {
@@ -154,7 +169,7 @@ def resolve_update_student_module(obj, info, student_id, module_id):
 
 def resolve_delete_student_module(obj, info, student_id, module_id):
     try:
-        module_id = StudentModule.query.get(student_id, module_id)
+        module_id = StudentModule.query.get((student_id, module_id))
         db.session.delete(module_id)
         db.session.commit()
         payload = {"success": True}
