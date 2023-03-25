@@ -116,9 +116,12 @@ def resolve_job_skills(obj, info, job_id=None):
     return payload
 
 # get job skill by job_id and skill_name (Quite useless)
-def resolve_job_skill(obj, info, job_id, skill_name):
+def resolve_job_skill(obj, info, job_id, old_skill, new_skill):
     try:
-        job_skill = JobSkill.query.get((job_id, skill_name))
+        #update old skill to new skill
+        job_skill = JobSkill.query.filter_by(job_id=job_id, skill_name=old_skill).first()
+        if job_skill and new_skill:
+            job_skill.skill_name = new_skill
         payload = {
             "success": True,
             "job_skill": job_skill

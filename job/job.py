@@ -2,6 +2,7 @@ from ariadne import load_schema_from_path, make_executable_schema, graphql_sync,
     ObjectType
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from os import environ
 
 from job_models import db
 from job_queries import resolve_job, resolve_jobs, resolve_job_skills, resolve_create_job, \
@@ -9,14 +10,15 @@ from job_queries import resolve_job, resolve_jobs, resolve_job_skills, resolve_c
     resolve_delete_job_skill
 
 app = Flask(__name__)
-<<<<<<< HEAD:job/job.py
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/job'
-=======
->>>>>>> main:module/module.py
+# using docker:
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+# windows: app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/job'
+# mac: app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/job'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.app_context().push()
 db.init_app(app)
 db.create_all()
+
 CORS(app)
 
 
