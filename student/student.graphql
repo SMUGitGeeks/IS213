@@ -71,6 +71,6 @@ type Mutation {
     delete_student(student_id: Int!): DeleteResult!
 
     create_student_module(student_id: Int!, module_id: String!): StudentModuleResult!
-    update_student_module(student_id: Int!, module_id: String!): StudentModuleResult!
+    update_student_module(student_id: Int!, old_module_id: String!, new_module_id: String!): StudentModuleResult!
     delete_student_module(student_id: Int!, module_id: String!): DeleteResult!
 }
