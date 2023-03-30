@@ -2,6 +2,7 @@ from ariadne import load_schema_from_path, make_executable_schema, graphql_sync,
     ObjectType
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from os import environ
 
 from module_models import db
 from module_queries import resolve_module, resolve_modules, resolve_module_skills, resolve_create_module, \
@@ -9,11 +10,12 @@ from module_queries import resolve_module, resolve_modules, resolve_module_skill
     resolve_delete_module_skill
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/module'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.app_context().push()
 db.init_app(app)
 db.create_all()
+
 CORS(app)
 
 
