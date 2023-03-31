@@ -8,9 +8,9 @@ from invokes import invoke_http
 app = Flask(__name__)
 CORS(app)
 
-student_URL = "http://localhost:5001/graphql"
-job_URL = "http://localhost:5002/graphql"
-module_URL = "http://localhost:5000/graphql"
+student_URL = "http://localhost:5001/"
+job_URL = "http://localhost:5002/"
+module_URL = "http://localhost:5000/"
 error_URL = ""
 
 @app.route('/jobs/<string:job_id>')
@@ -46,7 +46,7 @@ def match(job_id):
     data = {
         'query': job_query
     }
-    job_data = invoke_http(job_URL, method='POST', json=data)
+    job_data = invoke_http(job_URL + 'graphql', method='POST', json=data)
 
     # Error micro invoked ============
     if not job_data['data']['get_job']['success']:
@@ -58,7 +58,7 @@ def match(job_id):
     data = {
         'query': job_skills_query
     }
-    job_skills_data = invoke_http(job_URL, method='POST', json=data)
+    job_skills_data = invoke_http(job_URL + 'graphql', method='POST', json=data)
     job_skills = job_skills_data['data']['get_job_skills']['job_skills']
 
     if not job_skills_data['data']['get_job_skills']['success']:
@@ -79,23 +79,29 @@ def match(job_id):
     data = {
         'query': student_query
     }
-    student_data = invoke_http(student_URL, method='POST', json=data)
+    student_data = invoke_http(student_URL + 'graphql', method='POST', json=data)
 
     if not student_data['data']['get_student']['success']:
-        return invoke_error_microservice(student_modules_data, "student")
+        return invoke_error_microservice(student_data, "student")
     print('student_id: ' + student_id)
 
     # Get Student Modules
-    student_modules_query = "query { get_student_modules (student_id: " + student_id + ") { student_modules { module_id } success errors } }"
-    data = {
-        'query': student_modules_query
-    }
-    student_modules_data = invoke_http(student_URL, method='POST', json=data)
-    student_modules = student_modules_data['data']['get_student_modules']['student_modules']
+    # ++++ USING GRAPHQL +++++
+    # student_modules_query = "query { get_student_modules (student_id: " + student_id + ") { student_modules { module_id } success errors } }"
+    # data = {
+    #     'query': student_modules_query
+    # }
+    # student_modules_data = invoke_http(student_URL + 'graphql', method='POST', json=data)
+    # student_modules = student_modules_data['data']['get_student_modules']['student_modules']
 
-    if not student_modules_data['data']['get_student_modules']['success']:
-        return invoke_error_microservice(student_modules_data, "student")
+    # if not student_modules_data['data']['get_student_modules']['success']:
+    #     return invoke_error_microservice(student_modules_data, "student")
 
+    # ++++ USING REST API +++++
+    student_modules_result = invoke_http(student_URL + 'student/' + student_id + '/modules')
+    if student_modules_result['code'] != 200:
+        return invoke_error_microservice(student_modules_result, 'student')
+    student_modules = student_modules_result['data']
 
     # Create list of modules
     student_modules_list = []
@@ -112,7 +118,7 @@ def match(job_id):
         data = {
             'query': module_query
         }
-        module_skills_data = invoke_http(module_URL, method='POST', json=data)
+        module_skills_data = invoke_http(module_URL + 'graphql', method='POST', json=data)
 
         if not module_skills_data['data']['get_module_skills']['success']:
             return invoke_error_microservice(module_skills_data, "module")
