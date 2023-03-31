@@ -50,5 +50,25 @@ def graphql_server():
     status_code = 200 if success else 400
     return jsonify(result), status_code
 
+@app.route('/students/<string:student_id>/modules')
+def find_by_student_id(student_id):
+    modules = StudentModule.query.filter_by(student_id=student_id).all()
+    if len(modules):
+        return jsonify(
+            {
+                "code": 200,
+                "data": [module.to_dict() for module in modules]
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "data": {
+                "order_id": student_id
+            },
+            "message": "Order not found."
+        }
+    ), 404
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0",port=5001, debug=True)
