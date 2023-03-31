@@ -1,7 +1,7 @@
 const sgMail = require('@sendgrid/mail');
 
 // This is your real test secret API key.
-const API_KEY = "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";
+const API_KEY = "";
 
 sgMail.setApiKey(API_KEY);
 
