@@ -49,6 +49,8 @@ def resolve_create_job(obj, info, job_id, job_role, job_description, job_company
         )
         db.session.add(job)
         db.session.commit()
+
+        # call notify/graphql, send job to notify/graphql
         payload = {
             "success": True,
             "job": job.to_dict()

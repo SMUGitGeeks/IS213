@@ -34,16 +34,70 @@ email_URL = "http://localhost:6008/email"
 # email 6008
 # error tbc
 
-# Get updated job/jobs
+# Get new job from UI
 
-@app.route("/post_jobs", methods=['POST'])
+@app.route("/record_job", methods=['POST'])
+def store_job():
+    # Simple check of input format and data of the request are JSON
+    if request.is_json:
+        try:
+            newjob_record = request.get_json()
+            print("\nReceived new job record in JSON:", newjob_record)
+
+            # do the actual work
+            # 1. Send order info {cart items}
+            result = processPlaceOrder(order)
+            print('\n------------------------')
+            print('\nresult: ', result)
+            return jsonify(result), result["code"]
+
+        except Exception as e:
+            # Unexpected error in code
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
+            print(ex_str)
+
+            return jsonify({
+                "code": 500,
+                "message": "place_order.py internal error: " + ex_str
+            }), 500
+
+    # if reached here, not a JSON request.
+    return jsonify({
+        "code": 400,
+        "message": "Invalid JSON input: " + str(request.get_data())
+    }), 400
+
+
+###############################################################################################
+
+
+
+@app.route('/graphql', methods=['POST'])
+def graphql_server():
+    data = request.get_json()
+    success, result = graphql_sync(
+        schema,
+        data,
+        context_value=request,
+        debug=app.debug
+    )
+    status_code = 200 if success else 400
+    return jsonify(result), status_code
+
+@app.route("/post_job", methods=['POST'])
 def receive_new_jobs(): #initially was place_order
     # Simple check of input format and data of the request are JSON
     # 3. Receive new updated jobs
     if request.is_json:
         try:
             new_jobs = request.get_json()
-            print("\nReceived an email in JSON:", new_jobs)
+            # call student.py api
+            # emails = student.request.get_json()
+
+            objectname.addjob(job)
+
 
             # 4. and 5. Get list of emails from student microservice {Email}
             # response = requests.get(student_URL)
@@ -169,6 +223,12 @@ def retrieve_student_email():
     }
 
 
+while True():
+    objectname.publish_data()
+    time.sleep(1 week)
+
+
+
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for placing an order...")
@@ -180,3 +240,19 @@ if __name__ == "__main__":
     #   -- i.e., it gives permissions to hosts with any IP to access the flask program,
     #   -- as long as the hosts can already reach the machine running the flask program along the network;
     #   -- it doesn't mean to use http://0.0.0.0 to access the flask program.
+
+
+
+## new python file
+
+class objectname(){
+        constructor..
+            jobs = []
+
+        addingjob(job):
+            jobs.append(job)
+
+        publishdata():
+            subscribers = student/graphql
+            amqp.send([jobs, subscribers])
+}
