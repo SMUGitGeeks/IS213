@@ -11,8 +11,8 @@ from job_queries import resolve_job, resolve_jobs, resolve_job_skills, resolve_c
 
 app = Flask(__name__)
 # using docker:
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-# windows: app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/job'
+# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/job'
 # mac: app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/job'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.app_context().push()
