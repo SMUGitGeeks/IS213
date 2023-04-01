@@ -8,9 +8,7 @@ from student_models import db
 from student_queries import *
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/student'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/student'
-#app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/student' or 'mysql+mysqlconnector://root:root@localhost:3306/module' or environ.get('dbURL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.app_context().push()
 db.init_app(app)
@@ -52,7 +50,6 @@ def graphql_server():
 @app.route('/students/<string:student_id>/modules')
 def find_by_student_id(student_id):
     modules = StudentModule.query.filter_by(student_id=student_id).all()
-    # return [module.to_dict() for module in modules]
     if len(modules):
         return jsonify(
             {
