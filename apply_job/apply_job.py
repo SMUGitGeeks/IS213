@@ -1,6 +1,5 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-
 import os, sys
 from os import environ
 
@@ -9,32 +8,34 @@ import requests
 
 app = Flask(__name__)
 CORS(app)
-# all the URLs
-student_URL = environ.get('student_URL') or "http://localhost:5001/graphql"
-job_URL = environ.get('job_URL') or "http://localhost:5002/graphql"
-module_URL = environ.get('module_URL') or "http://localhost:5000/graphql"
-course_URL = environ.get('course_URL') or "http://localhost:5003/graphql"
+
+student_URL = environ.get('student_URL') or "http://localhost:5001/"
+job_URL = environ.get('job_URL') or "http://localhost:5002/"
+module_URL = environ.get('module_URL') or "http://localhost:5000/"
+course_URL = environ.get('course_URL') or "http://localhost:5003/"
 error_URL = ""
 
 
-# dispaly all jobs via REST API
+# display all jobs via REST API
+@app.route('/jobs', methods=['GET'])
 def display_all_jobs():
     print('\n-----Invoking job microservice-----')
-    job_data = invoke_http(job_URL + '/jobs', method='GET')
+    job_data = invoke_http(job_URL + 'jobs', method='GET')
     if job_data['code'] != 200:
         return invoke_error_microservice(job_data, 'job')
     job_list = job_data['data']
     return jsonify(job_list), 200
 
 @app.route('/apply/<string:student_id>/<string:job_id>', methods=['GET'])
-def apply_job(student_id, job_id):
+def get_suitability(student_id, job_id):
     # 1. Get student's modules by graphql
     print('\n-----Invoking student microservice-----')
-    student_modules_query = "query { get_student_modules(student_id: \"" + student_id + "\") { student_modules { module_id } success errors } }"
+    student_modules_query = "query { get_student_modules(student_id:" + student_id + ") { student_modules { module_id } success errors } }"
     data = {
         'query': student_modules_query 
     }
     student_modules_data = invoke_http(student_URL + 'graphql', method='POST', json=data)
+    
     if not student_modules_data['data']['get_student_modules']['success']:
         return invoke_error_microservice(student_modules_data, "student")
     student_modules = student_modules_data['data']['get_student_modules']['student_modules']
@@ -62,7 +63,7 @@ def apply_job(student_id, job_id):
 
     # 3. Get job skills by graphql
     print('\n-----Invoking job microservice-----')
-    job_skills_query = "query { get_job_skills(job_id: \"" + job_id + "\") { job_skills { job_id skill_name } success errors } }"
+    job_skills_query = "query { get_job_skills(job_id:" + job_id + ") { job_skills { job_id skill_name } success errors } }"
     data = {
         'query': job_skills_query
     }
@@ -135,8 +136,7 @@ def invoke_error_microservice(json, microservice):
         }
 
 @app.route('/apply/<string:student_id>/<string:job_id>', methods=['POST'])
-
-def apply_job(student_id, job_id, form):
+def post_resume(student_id, job_id, form):
     if form.validate_on_submit():
             # takes the resume
             file = form.file.data
@@ -158,3 +158,7 @@ def apply_job(student_id, job_id, form):
             response = requests.request("POST", url, headers=headers, data=payload)
 
             return(response.text)
+    
+if __name__ == "__main__":
+    print("This is flask " + os.path.basename(__file__) + " for applying a job...")
+    app.run(host="0.0.0.0", port=5006, debug=True)
