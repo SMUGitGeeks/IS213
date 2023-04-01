@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Title</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css'
+        rel='stylesheet'
+        integrity='sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC'
+        crossorigin='anonymous'>
+
+    <!-- Vue 3 -->
+    <script src='https://cdn.jsdelivr.net/npm/vue@3.0.2/dist/vue.global.js'></script>
+    <!-- Vue 3: production version, optimized for size and speed -->
+    <!-- <script src='https://cdn.jsdelivr.net/npm/vue@3.0.2/dist/vue.global.prod.js'></script> -->
+
+</head>
+
+<body>
+    <!-- <p>test</p> -->
+    <div id="app" class="container">
+        <h1>BOSS Finder</h1>
+
+        <div class="row">
+            <div class="col">
+                Input Student ID: <input v-model="student_id" placeholder="Insert StudentID">
+                <button @click="findJobs()" type="button"
+                    class="my-1 btn btn-sm btn-primary">Search</button><br>
+                <button @click="getAllJobs()" type="button"
+                    class="my-1 btn btn-sm btn-primary">jobs</button><br>
+            </div>
+        </div>
+
+        <div class="row" v-if="haveJobs">
+            <div class="row">
+                <h3>Search Results</h3>
+            </div>
+            <div class="row">
+                <div class="card" style="width: 18rem;" v-for="job in jobs">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ job['job_role'] }}</h5>
+                        <h6 class="card-subtitle mb-2 text-body-secondary">{{ job['job_company'] }}</h6>
+                        <p class="card-text">{{ job['job_description'] }}</p>
+                        <a href="https://www.google.com" class="card-link">Visit Company Page</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const match_job_URL = "http://localhost:5005";
+        const job_URL = "http://localhost:5002";
+
+        const app = Vue.createApp({
+            computed: {
+                haveJobs: function() {
+                    return this.jobs.length > 0;
+                }
+            },
+            data() {
+                return {
+                    student_id: "",
+                    jobs: [],
+                    matched_jobs: [],
+                    message: "There is a problem retrieving data, please try again later."
+                };
+            },
+            methods: {
+                getAllJobs () {
+                    // on Vue instance created, load the book list
+                    const response =
+                        fetch(job_URL + '/jobs')
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(data);
+                                if (data.code !== 200) {
+                                    // no job in db
+                                    this.message = data.message;
+                                } else {
+                                    this.jobs = data.data;
+                                }
+                            })
+                            .catch(error => {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                console.log(this.message + error);
+
+                            });
+
+                },
+                findJob () {
+                    console.log(this.student_id);
+                    const response =
+                        fetch(`${match_job_URL}/match/${this.student_id}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(response);
+                                if (data.code !== 200) {
+                                    // no book in db
+                                    this.message = data.message;
+                                    this.matched_jobs = [];
+                                } else {
+                                    this.matched_jobs = data.jobs;
+                                }
+                            })
+                            .catch(error => {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                console.log(this.message + error);
+
+                            });
+
+                },
+            },
+            created () {
+                // on Vue instance created, load the book list
+                this.getAllJobs();
+            }
+        });
+
+        const vm = app.mount('#app');
+    </script>
+
+    <!-- Bootstrap Javascript -->
+    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js'
+        integrity='sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM'
+        crossorigin='anonymous'></script>
+
+</body>
+
+</html>
