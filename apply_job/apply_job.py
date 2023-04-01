@@ -90,6 +90,7 @@ def get_suitability(student_id, job_id):
     # 5. If there is lack skill, get course_id to learn those skills
     if not have_skill:
         courses_data = []
+        final_courses = []
         print('\n-----Invoking course microservice-----')
         for skill in lack_skills:
             course_query = "query { get_courses (skill_name: \"" + skill +"\") { courses { course_id course_name course_link} success errors } }"
@@ -101,13 +102,18 @@ def get_suitability(student_id, job_id):
                 return invoke_error_microservice(course_data, "course")
             courses_data += course_data['data']['get_courses']['courses']
 
+        # Create list of unqiue courses
+        for course in courses_data:
+            if course not in final_courses:
+                final_courses.append(course)
+
         # 6. Return courses to learn those skills plus T/F to continue with application
         return {
             "code": 200,
             "data": {
                 "job_id": job_id,
                 "lack_skills": lack_skills,
-                "courses": courses_data
+                "courses": final_courses
             },
             "message": False
         }
@@ -136,28 +142,27 @@ def invoke_error_microservice(json, microservice):
         }
 
 @app.route('/apply/<string:student_id>/<string:job_id>', methods=['POST'])
-def post_resume(student_id, job_id, form):
-    if form.validate_on_submit():
-            # takes the resume
-            file = form.file.data
-            studentID = str(form.student_id.data)
-            jobID = str(form.job_id.data)
+def post_resume(student_id, job_id, resume):
+    # takes the resume
+    file = resume
+    studentID = str(form.student_id.data)
+    jobID = str(form.job_id.data)
 
 
-            url = "https://content.dropboxapi.com/2/files/upload"
+    url = "https://content.dropboxapi.com/2/files/upload"
 
-            payload = file
-            path = "/" + studentID + "_" + jobID
+    payload = file
+    path = "/" + studentID + "_" + jobID
 
-            headers = {
-            'Authorization': 'Bearer sl.BbrM4lMJ5eOKlenEzSawDGeDlr4ndX4BE7xbgkjgryQybbbYeFrPBucrguud4xGXVmYyiXbEn_s7GpCaQMgSLNquoE3c6wfYX2adegAsL8BAEF5umD17TC1RxHcLkdtwPDYrjSk',
-            'Dropbox-API-Arg': '{"autorename":false,"mode":"add","mute":false,"path":"'+ path +'.pdf","strict_conflict":false}',
-            'Content-Type': 'application/octet-stream'
-            }
+    headers = {
+    'Authorization': 'Bearer sl.BbrM4lMJ5eOKlenEzSawDGeDlr4ndX4BE7xbgkjgryQybbbYeFrPBucrguud4xGXVmYyiXbEn_s7GpCaQMgSLNquoE3c6wfYX2adegAsL8BAEF5umD17TC1RxHcLkdtwPDYrjSk',
+    'Dropbox-API-Arg': '{"autorename":false,"mode":"add","mute":false,"path":"'+ path +'.pdf","strict_conflict":false}',
+    'Content-Type': 'application/octet-stream'
+    }
 
-            response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url, headers=headers, data=payload)
 
-            return(response.text)
+    return(response.text)
     
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for applying a job...")
