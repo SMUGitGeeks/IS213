@@ -1,0 +1,190 @@
+version: "3.8"
+
+volumes:
+  rabbitmq_data:
+
+services:
+ 
+  ###################################
+  # Student: The Student microservice
+  ###################################
+  student:
+    build:
+      context: ./
+      dockerfile: student\student.Dockerfile
+    image: G6T1/student:esd
+    restart: always
+    environment:
+      # Windows
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/student
+      # MacOS
+      # dbURL: mysql+mysqlconnector://is213:root@host.docker.internal:3306/student
+      PYTHONUNBUFFERED: 1
+ 
+  ###################################
+  # Module: The Module microservice
+  ###################################
+  module:
+    build:
+      context: ./
+      dockerfile: module\module.Dockerfile
+    image: G6T1/module:esd
+    restart: always
+    environment:
+      # Windows
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/module
+      # MacOS
+      # dbURL: mysql+mysqlconnector://is213:root@host.docker.internal:3306/module
+      PYTHONUNBUFFERED: 1
+
+  ###################################
+  # Job: The Job microservice
+  ###################################
+  job:
+    build:
+      context: ./
+      dockerfile: job\job.Dockerfile 
+    image: G6T1/student:esd
+    restart: always
+    environment:
+      # Windows
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/job
+      # MacOS
+      # dbURL: mysql+mysqlconnector://is213:root@host.docker.internal:3306/job
+      PYTHONUNBUFFERED: 1
+
+  ###################################
+  # Course: The Course microservice
+  ###################################
+  course:
+    build:
+      context: ./
+      dockerfile: course.Dockerfile
+    image: G6T1/course:esd
+    restart: always
+    environment:
+      # Windows
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/course
+      # MacOS
+      # dbURL: mysql+mysqlconnector://is213:root@host.docker.internal:3306/course
+      PYTHONUNBUFFERED: 1
+
+  #######################################################
+  # Email: The Email microservice
+  #######################################################
+  email:
+    build:
+      context: ./
+      dockerfile: email\email.Dockerfile
+    image: G6T1/email:esd
+    restart: always
+    environment:
+      PYTHONUNBUFFERED: 1
+
+  ####################################
+  # RabbitMQ: The messaging broker   
+  ####################################
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: esd-rabbit
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes: 
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  ###################################
+  # Error: The Error microservice
+  ###################################
+  error:
+    build:
+      context: ./
+      dockerfile: error\error.Dockerfile
+    image: G6T1/error:esd
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
+
+  ###############################################
+  # Match Job: The Match Job microservice
+  ###############################################
+  match_job:
+    build:
+      context: ./
+      dockerfile: match_job\match_job.Dockerfile
+    image: G6T1/match_job:esd
+    restart: always
+    depends_on:
+      - student
+      - job
+      - module
+      - error
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      student_URL: http://student:5001
+      module_URL: http://module:5000
+      job_URL: http://job:5002
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "6005:5005"
+
+  ###############################################
+  # Apply Job: The Apply Job microservice
+  ###############################################
+  apply_job:
+    build:
+      context: ./
+      dockerfile: apply_job\apply_job.Dockerfile
+    image: G6T1/apply_job:esd
+    restart: always
+    depends_on:
+      - student
+      - job
+      - module
+      - course
+      - error
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      student_URL: http://student:5001
+      module_URL: http://module:5000
+      job_URL: http://job:5002
+      course_URL: http://course:5003
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "6006:5006"
+
+  ###############################################
+  # Create Job: The Create Job microservice
+  ###############################################
+  create_job:
+    build:
+      context: ./
+      dockerfile: create_job\create_job.Dockerfile
+    image: G6T1/create_job:esd
+    restart: always
+    depends_on:
+      - student
+      - job
+      - email
+      - error
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      student_URL: http://student:5001
+      job_URL: http://job:5002
+      email_URL: http://email:5008
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "6007:5007"
+
+
