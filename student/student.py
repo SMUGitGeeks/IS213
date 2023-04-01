@@ -53,6 +53,7 @@ def graphql_server():
 @app.route('/students/<string:student_id>/modules')
 def find_by_student_id(student_id):
     modules = StudentModule.query.filter_by(student_id=student_id).all()
+    # return [module.to_dict() for module in modules]
     if len(modules):
         return jsonify(
             {
@@ -64,9 +65,9 @@ def find_by_student_id(student_id):
         {
             "code": 404,
             "data": {
-                "order_id": student_id
+                "student_id": student_id
             },
-            "message": "Order not found."
+            "message": "Student not found."
         }
     ), 404
 
