@@ -169,12 +169,13 @@
                                         this.message = data.message;
                                         this.matched_jobs = [];
                                         this.hasError = true
-                                    this.isSearching = false
+                                        this.isSearching = false
                                     } else {
-                                        this.matched_jobs = data.jobs;
+                                        this.matched_jobs = data.data;
                                         this.hasSearched = true;
                                         console.log(data)
                                         this.isSearching = false
+                                        this.hasError = false
                                     }
                                 })
                                 .catch(error => {

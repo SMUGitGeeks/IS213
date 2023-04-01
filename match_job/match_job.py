@@ -140,7 +140,7 @@ def match(student_id):
         jobs_result = invoke_http(job_URL + 'job/' + skill + '/jobs')
         if jobs_result['code'] == 200:
             for job_skill_detail in jobs_result['data']:
-                job_id = job_skill_detail['job_id']
+                job_id = str(job_skill_detail['job_id'])
                 print('job_id: ' + job_id)
 
                 job_detail_result = invoke_http(job_URL + 'job/' + job_id)
