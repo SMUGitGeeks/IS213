@@ -5,9 +5,7 @@ from flask_cors import CORS
 from os import environ
 
 from job_models import db
-from job_queries import resolve_job, resolve_jobs, resolve_job_skills, resolve_create_job, \
-    resolve_update_job, resolve_delete_job, resolve_create_job_skill, resolve_update_job_skill, \
-    resolve_delete_job_skill
+from job_queries import *
 
 app = Flask(__name__)
 # using docker:
@@ -51,6 +49,24 @@ def graphql_server():
     )
     status_code = 200 if success else 400
     return jsonify(result), status_code
+
+# REST API
+@app.route('/jobs')
+def get_all_jobs():
+    jobs = Job.query.all()
+    if len(jobs):
+        return jsonify(
+            {
+                "code": 200,
+                "data": [job.to_dict() for job in jobs]
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "No jobs found."
+        }
+    ), 404
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5002, debug=True)
