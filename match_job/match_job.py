@@ -43,6 +43,11 @@ def match(student_id):
     print('\n-----Invoking student microservice-----')
 
     # Verify valid student_id ===============================
+    if not student_id.isnumeric() and not (len(student_id) == 8):
+        return {
+            'code': 400,
+            'message': 'Invalid Student ID.'
+        }
     student_query = "query { get_student (student_id:" + student_id + ") { student { student_id } success errors } }"
     data = {
         'query': student_query
@@ -142,7 +147,7 @@ def match(student_id):
                 if job_id in job_frequency_dict:
                     job_frequency_dict[job_id][0] += 1
                 else:
-                    job_frequency_dict[job_id] = [1, job_detail_result]
+                    job_frequency_dict[job_id] = [1, job_detail_result['data']]
 
     # Return if no jobs ==================
     if job_frequency_dict == {}:
