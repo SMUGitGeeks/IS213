@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from os import environ
 
-from job_models import db
+from job_models import *
 from job_queries import resolve_job, resolve_jobs, resolve_job_skills, resolve_create_job, \
     resolve_update_job, resolve_delete_job, resolve_create_job_skill, resolve_update_job_skill, \
     resolve_delete_job_skill
@@ -51,6 +51,47 @@ def graphql_server():
     )
     status_code = 200 if success else 400
     return jsonify(result), status_code
+
+@app.route('/job/<string:job_id>')
+def get_job_detail(job_id):
+    job = Job.query.get(job_id)
+    if job:
+        return jsonify(
+            {
+                "code": 200,
+                "data": job.to_dict()
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "data": {
+                "job_id": job_id
+            },
+            "message": "Job not found."
+        }
+    ), 404
+
+@app.route('/job/<string:skill_name>/jobs')
+def find_by_skill_name(skill_name):
+    jobs = JobSkill.query.filter_by(skill_name=skill_name).all()
+    # return [module.to_dict() for module in modules]
+    if len(jobs):
+        return jsonify(
+            {
+                "code": 200,
+                "data": [job.to_dict() for job in jobs]
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "data": {
+                "skill_name": skill_name
+            },
+            "message": "Jobs not found."
+        }
+    ), 404
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5002, debug=True)
