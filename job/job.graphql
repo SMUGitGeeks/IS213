@@ -14,7 +14,7 @@ The pairing is as follows
 column_name: var_type
 """
 type Job {
-    job_id: String!
+    job_id: Int!
     job_role: String!
     job_description: String!
     job_company: String!
@@ -25,7 +25,7 @@ type Job {
 The 'JobSkill' type represents the JobSkill table in our database
 """
 type JobSkill {
-    job_id: String!
+    job_id: Int!
     skill_name: String!
 }
 
@@ -78,9 +78,9 @@ We use the 'Query' type to define all of the available queries
 """
 type Query {
     get_jobs(skill_name: String!): JobsResult!
-    get_job_skills(job_id: String!): JobSkillsResult!
-    get_job(job_id: String!): JobResult!
-    get_job_skill(job_id: String!, skill_name: String!): JobSkillResult!
+    get_job_skills(job_id: Int!): JobSkillsResult!
+    get_job(job_id: Int!): JobResult!
+    get_job_skill(job_id: Int!, skill_name: String!): JobSkillResult!
 }
 
 
@@ -88,10 +88,10 @@ type Query {
 We use the 'Mutation' type to define all of the available mutations
 """
 type Mutation {
-    create_job(job_id: String!, job_role: String!, job_description: String!, job_company: String!): JobResult!
-    create_job_skill(job_id: String!, skill_name: String!): JobSkillResult!
-    update_job(job_id: String!, job_role: String!, job_description: String!, job_company: String!): JobResult!
-    update_job_skill(job_id: String!, old_skill: String!, new_skill: String!): JobSkillResult!
-    delete_job(job_id: String!): DeleteResult!
-    delete_job_skill(job_id: String!, skill_name: String!): DeleteResult!
+    create_job(job_role: String!, job_description: String!, job_company: String!): JobResult!
+    create_job_skill(job_id: Int!, skill_name: String!): JobSkillResult!
+    update_job(job_id: Int!, job_role: String!, job_description: String!, job_company: String!): JobResult!
+    update_job_skill(job_id: Int!, old_skill: String!, new_skill: String!): JobSkillResult!
+    delete_job(job_id: Int!): DeleteResult!
+    delete_job_skill(job_id: Int!, skill_name: String!): DeleteResult!
 }
