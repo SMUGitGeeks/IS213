@@ -15,20 +15,10 @@ module_URL = environ.get('module_URL') or "http://localhost:5000/"
 course_URL = environ.get('course_URL') or "http://localhost:5003/"
 error_URL = ""
 
-
-# display all jobs via REST API
-@app.route('/jobs', methods=['GET'])
-def display_all_jobs():
-    print('\n-----Invoking job microservice-----')
-    job_data = invoke_http(job_URL + 'jobs', method='GET')
-    if job_data['code'] != 200:
-        return invoke_error_microservice(job_data, 'job')
-    job_list = job_data['data']
-    return jsonify(job_list), 200
-
 @app.route('/apply/<string:student_id>/<string:job_id>', methods=['GET'])
 def get_suitability(student_id, job_id):
     # 1. Get student's modules by graphql
+    print("------------------------------------")
     print('\n-----Invoking student microservice-----')
     student_modules_query = "query { get_student_modules(student_id:" + student_id + ") { student_modules { module_id } success errors } }"
     data = {
@@ -57,9 +47,12 @@ def get_suitability(student_id, job_id):
         module_skills_data = invoke_http(module_URL + 'graphql', method='POST', json=data)
         if not module_skills_data['data']['get_module_skills']['success']:
             return invoke_error_microservice(module_skills_data, "module")
-        
-        # Create list of module skills    
-        skills_data += module_skills_data['data']['get_module_skills']['module_skills']
+        module_skills = module_skills_data['data']['get_module_skills']['module_skills']
+
+        # Create list of module skills
+        for skill in module_skills:
+            skills_data.append(skill['skill_name'])
+    print('Skills that student has: ' + str(skills_data))
 
     # 3. Get job skills by graphql
     print('\n-----Invoking job microservice-----')
@@ -76,6 +69,7 @@ def get_suitability(student_id, job_id):
     job_skills_list = []
     for detail in job_skills:
         job_skills_list.append(detail['skill_name'])
+    print('Skills that job requires: ' + str(job_skills_list))
 
     # 4. Compare student's modules with job skills
     have_skill = True
@@ -86,9 +80,43 @@ def get_suitability(student_id, job_id):
         else:
             have_skill = False
             lack_skills.append(skill)
+    print("\nStudent is lacking these skills:" + str(lack_skills))
     
     # 5. If there is lack skill, get course_id to learn those skills
     if not have_skill:
+        # Check if student is graduated
+        student_query = "query { get_student (student_id:" + student_id + ") { student { is_graduated } success errors } }"
+        data = {
+            'query': student_query
+        }
+        student_data = invoke_http(student_URL + 'graphql', method='POST', json=data)
+        if not student_data['data']['get_student']['success']:
+            return invoke_error_microservice(student_data, "student")
+        is_graduated = student_data['data']['get_student']['student']['is_graduated']
+
+        # if student is not graduated, look for modules to learn those skills
+        final_modules = []
+        if is_graduated == 0:
+            print("\nStudent is not graduated")
+            print('-----Invoking module microservice-----')
+            modules_data = []
+            for skill in lack_skills:
+                module_query = "query { get_modules (skill_name: \"" + skill +"\") { modules { module_id module_name} success errors } }"
+                data = {
+                    'query': module_query
+                }
+                module_data = invoke_http(module_URL + 'graphql', method='POST', json=data)
+                if not module_data['data']['get_modules']['success']:
+                    return invoke_error_microservice(module_data, "module")
+                modules_data += module_data['data']['get_modules']['modules']
+
+            # Create list of unqiue modules that student has not taken but needed for the job
+            for module in modules_data:
+                if (module not in final_modules):
+                    final_modules.append(module)
+            print('SMU Modules to learn those skills: ' + str(final_modules))
+
+        # for all students, look for external courses to learn those skills
         courses_data = []
         final_courses = []
         print('\n-----Invoking course microservice-----')
@@ -106,14 +134,27 @@ def get_suitability(student_id, job_id):
         for course in courses_data:
             if course not in final_courses:
                 final_courses.append(course)
+        print('Courses to learn those skills: ' + str(final_courses))
 
         # 6. Return courses to learn those skills plus T/F to continue with application
-        return {
+        if final_modules == []:
+            return {
             "code": 200,
             "data": {
                 "job_id": job_id,
                 "lack_skills": lack_skills,
                 "courses": final_courses
+            },
+            "message": False
+        }
+
+        return {
+            "code": 200,
+            "data": {
+                "job_id": job_id,
+                "lack_skills": lack_skills,
+                "courses": final_courses,
+                "modules": final_modules
             },
             "message": False
         }
