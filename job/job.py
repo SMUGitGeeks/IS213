@@ -4,21 +4,18 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from os import environ
 
-from job_models import *
-from job_queries import resolve_job, resolve_jobs, resolve_job_skills, resolve_create_job, \
-    resolve_update_job, resolve_delete_job, resolve_create_job_skill, resolve_update_job_skill, \
-    resolve_delete_job_skill
+from job_models import db
+from job_queries import *
 
 app = Flask(__name__)
 # using docker:
-# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/job'
-# mac: app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/job'
+#app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/job'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/job'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.app_context().push()
 db.init_app(app)
 db.create_all()
-
 CORS(app)
 
 
@@ -90,6 +87,24 @@ def find_by_skill_name(skill_name):
                 "skill_name": skill_name
             },
             "message": "Jobs not found."
+        }
+    ), 404
+
+# REST API
+@app.route('/jobs')
+def get_all_jobs():
+    jobs = Job.query.all()
+    if len(jobs):
+        return jsonify(
+            {
+                "code": 200,
+                "data": [job.to_dict() for job in jobs]
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "No jobs found."
         }
     ), 404
 

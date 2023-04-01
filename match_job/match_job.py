@@ -3,7 +3,7 @@ from flask_cors import CORS
 
 import os, sys
 
-from invokes import invoke_http
+from apply_jobs.invokes import invoke_http
 
 app = Flask(__name__)
 CORS(app)
