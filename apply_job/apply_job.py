@@ -143,26 +143,22 @@ def invoke_error_microservice(json, microservice):
 
 @app.route('/apply/<string:student_id>/<string:job_id>', methods=['POST'])
 def post_resume(student_id, job_id, resume):
-    # takes the resume
-    file = resume
-    studentID = str(form.student_id.data)
-    jobID = str(form.job_id.data)
+            # takes the resume
+            file = resume
+            url = "https://content.dropboxapi.com/2/files/upload"
 
+            payload = file
+            path = "/" + student_id + "_" + job_id
 
-    url = "https://content.dropboxapi.com/2/files/upload"
+            headers = {
+            'Authorization': 'Bearer sl.BbrM4lMJ5eOKlenEzSawDGeDlr4ndX4BE7xbgkjgryQybbbYeFrPBucrguud4xGXVmYyiXbEn_s7GpCaQMgSLNquoE3c6wfYX2adegAsL8BAEF5umD17TC1RxHcLkdtwPDYrjSk',
+            'Dropbox-API-Arg': '{"autorename":false,"mode":"add","mute":false,"path":"'+ path +'.pdf","strict_conflict":false}',
+            'Content-Type': 'application/octet-stream'
+            }
 
-    payload = file
-    path = "/" + studentID + "_" + jobID
+            response = requests.request("POST", url, headers=headers, data=payload)
 
-    headers = {
-    'Authorization': 'Bearer sl.BbrM4lMJ5eOKlenEzSawDGeDlr4ndX4BE7xbgkjgryQybbbYeFrPBucrguud4xGXVmYyiXbEn_s7GpCaQMgSLNquoE3c6wfYX2adegAsL8BAEF5umD17TC1RxHcLkdtwPDYrjSk',
-    'Dropbox-API-Arg': '{"autorename":false,"mode":"add","mute":false,"path":"'+ path +'.pdf","strict_conflict":false}',
-    'Content-Type': 'application/octet-stream'
-    }
-
-    response = requests.request("POST", url, headers=headers, data=payload)
-
-    return(response.text)
+            return(response.text)
     
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for applying a job...")
