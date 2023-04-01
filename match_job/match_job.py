@@ -43,7 +43,7 @@ def match(student_id):
     print('\n-----Invoking student microservice-----')
 
     # Verify valid student_id ===============================
-    if not student_id.isnumeric() and not (len(student_id) == 8):
+    if not student_id.isnumeric():
         return {
             'code': 400,
             'message': 'Invalid Student ID.'
