@@ -105,3 +105,25 @@ def invoke_error_microservice(json, microservice):
             "data": json,
             "message": f"{microservice} failed, sent for error handling."
         }
+
+# if form.validate_on_submit():
+#         # takes the resume
+#         file = form.file.data
+#         studentID = str(form.student_id.data)
+#         jobID = str(form.job_id.data)
+
+
+#         url = "https://content.dropboxapi.com/2/files/upload"
+
+#         payload = file
+#         path = "/" + studentID + "_" + jobID
+
+#         headers = {
+#         'Authorization': 'Bearer sl.BbrM4lMJ5eOKlenEzSawDGeDlr4ndX4BE7xbgkjgryQybbbYeFrPBucrguud4xGXVmYyiXbEn_s7GpCaQMgSLNquoE3c6wfYX2adegAsL8BAEF5umD17TC1RxHcLkdtwPDYrjSk',
+#         'Dropbox-API-Arg': '{"autorename":false,"mode":"add","mute":false,"path":"'+ path +'.pdf","strict_conflict":false}',
+#         'Content-Type': 'application/octet-stream'
+#         }
+
+#         response = requests.request("POST", url, headers=headers, data=payload)
+
+#         return(response.text)
