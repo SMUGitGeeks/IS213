@@ -6,22 +6,12 @@ import os, sys
 import requests
 from invokes import invoke_http
 
-# import amqp_setup
+# import amqp_setup         # IMPORTANT -> Add this later
 import pika
 import json
 
 app = Flask(__name__)
 CORS(app)
-
-############################ ignore this ############################
-#                                                                   #
-#    book_URL = "http://localhost:5000/book"                        #
-#    order_URL = "http://localhost:5001/order"                      #
-#    shipping_record_URL = "http://localhost:5002/shipping_record"  #
-#    activity_log_URL = "http://localhost:5003/activity_log"        #
-#    error_URL = "http://localhost:5004/error"                      #
-#                                                                   #
-#####################################################################
 
 
 student_URL = "http://localhost:5001/"
@@ -30,13 +20,13 @@ email_URL = "http://localhost:5008/"
 #error_URL = "http://localhost:5004/"
 
 
-
-
-# -> Get new job from UI 
-# -> send creation request to job microservice 
-# -> receive status 
-# -> save job record (if success) 
-# -> return status to UI
+# Create Job Microservice Steps
+#   -> Job Creation
+#       -> Get new job from UI 
+#       -> send creation request to job microservice 
+#       -> receive status 
+#       -> save job record (if success) 
+#       -> return status to UI
 
 
 # -> Get new job from UI 
@@ -93,22 +83,21 @@ def add_job(record):
 
     print('\n-----Invoking job microservice-----')
 
-    # add job record ===============
+    # ====================== add new job record ======================
     job_id = record['job_id']
     job_role = record['job_role']
     job_description = record['job_description']
     job_company = record['job_company']
 
-    job_mutation = "mutation{ create_job(job_id:" +str(job_id)+ ",    job_role:" +job_role+ ", job_description: " +job_description+ ", job_company:" +job_company+ "){ success errors }}"
-
-
+    job_mutation = "mutation{ create_job(job_id:\"" +str(job_id)+ "\",    job_role:\"" +job_role+ "\", job_description: \"" +job_description+ "\", job_company:\"" +str(job_id)+ "\"){ success errors }}"
 
     data = {
         'query': job_mutation
     }
 
-
+    print('\n-----Adding new job record in database-----')
     try: 
+        
         job_data = invoke_http(job_URL + 'graphql', method='POST', json=data)
         print("======TEST 1======")
         print(job_data)
@@ -125,6 +114,8 @@ def add_job(record):
             "message": "Failed to invoke job microservice"
         }), 500
     
+    # =================================================================
+
     # if job_data['code'] not in range
 
 
