@@ -140,9 +140,9 @@ def match(student_id):
 
                 job_detail_result = invoke_http(job_URL + 'job/' + job_id)
                 if job_id in job_frequency_dict:
-                    job_frequency_dict[job_id][0] += 1
+                    job_frequency_dict[job_id]['freq'] += 1
                 else:
-                    job_frequency_dict[job_id] = [1, job_detail_result]
+                    job_frequency_dict[job_id] = {'freq': 1, 'data': job_detail_result}
 
     # Return if no jobs ==================
     if job_frequency_dict == {}:
@@ -152,18 +152,16 @@ def match(student_id):
         }
 
     # Arrange Job by frequency ==========
-    rearranged_job_frequency_dict = {}
-    for key in job_frequency_dict:
-        rearranged_job_frequency_dict[job_frequency_dict[key][0]] = job_frequency_dict[key][1]
-    sorted_job_freq = sorted(rearranged_job_frequency_dict.keys(), reverse=True)
+    sorted_job_tuple_list = sorted(job_frequency_dict.items(), key=lambda x: x[1]['freq'], reverse=True)
 
     sorted_jobs_list = []
-    for freq in sorted_job_freq:
-        sorted_jobs_list.append(rearranged_job_frequency_dict[freq])
+    for a_tuple in sorted_job_tuple_list:
+        print(a_tuple)
+        sorted_jobs_list.append(a_tuple[1]['data']['data'])
 
     return {
         "code": 200,
-        "jobs": sorted_jobs_list
+        "data": sorted_jobs_list
     }
 
 def invoke_error_microservice(json, microservice):
