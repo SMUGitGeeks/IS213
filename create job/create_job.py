@@ -29,45 +29,47 @@ email_URL = "http://localhost:5008/"
 #       -> return status to UI
 
 
-# -> Get new job from UI 
-
+ # ====================== Get Jobs from UI ======================
 @app.route("/create_job", methods=['POST'])
 def create_job():
-    # Simple check of input format and data of the request are JSON
+
     if request.is_json:
         try:
             newjob_record = request.get_json()
             print("\nReceived new job record in JSON:", newjob_record)
-
-            # newjob_record should have both details of jobs and skills.
-            # {{'job': jobs_details},
-            # {'jobskills': jobskills_details }}
-
-
-
-           # -> send new job to job microservice 
-           # -> receive status 
+                # (COMMENT)
+                # newjob_record should have both details of jobs and skills.
+                # Example is used:
+                # {
+                    # "job_id": 200,
+                    # "job_role": "taxi driver",
+                    # "job_company": "grab",
+                    # "job_description": "vroom vroom",
+                    # "jobskills": ["python", "math knowledge", "driving skills"]
+                # }
 
             result = add_job(newjob_record)
-
+                # -> send new job to job microservice 
+                # -> receive status 
 
             print('\n------------------------')
             print('\nresult: ', result)
             return jsonify(result), result["code"]
 
         except Exception as e:
+
             # Unexpected error in code
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
             print(ex_str)
             
-
             return jsonify({
                 "code": 500,
                 "message": "place_order.py internal error: " + ex_str
             }), 500
-
+        
+        
     # if reached here, not a JSON request.
     return jsonify({
         "code": 400,
@@ -76,10 +78,11 @@ def create_job():
 
 
 
+
+def add_job(record):
     # -> send new job to job microservice 
     # -> receive status 
 
-def add_job(record):
 
     print('\n-----Invoking job microservice-----')
 
@@ -92,12 +95,12 @@ def add_job(record):
     job_mutation = "mutation{ create_job(job_id:\"" +str(job_id)+ "\",    job_role:\"" +job_role+ "\", job_description: \"" +job_description+ "\", job_company:\"" +str(job_id)+ "\"){ success errors }}"
 
     data = {
-        'query': job_mutation
-    }
+            'query': job_mutation
+            }
 
     print('\n-----Adding new job record in database-----')
+
     try: 
-        
         job_data = invoke_http(job_URL + 'graphql', method='POST', json=data)
         print("======TEST 1======")
         print(job_data)
@@ -116,7 +119,15 @@ def add_job(record):
     
     # =================================================================
 
-    # if job_data['code'] not in range
+   
+
+
+
+
+
+    
+
+
 
 
     # add jobskills ===============
@@ -147,7 +158,19 @@ def add_job(record):
 
 
 
+def invoke_error_microservice(json, microservice):
+    print(f'\n\n-----Invoking error microservice as {microservice} fails-----')
+    invoke_http(error_URL, method="POST", json=json)
+    # - reply from the invocation is not used; 
+    # continue even if this invocation fails
+    print("Sent to the error microservice:", json)
 
+    # 7. Return error
+    return {
+            "code": 500,
+            "data": json,
+            "message": f"{microservice} failed, sent for error handling."
+        }
 
 
 
