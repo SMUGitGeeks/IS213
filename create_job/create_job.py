@@ -272,7 +272,7 @@ def send_to_email():
     students = sub_emails['data']['get_students']['students']
 
     # get students only who is subscribed
-    subscribed_students = [student for student in students if student['is_subscribed']]
+    subscribed_students = [student['email'] for student in students if student['is_subscribed']]
 
     print(subscribed_students)
 
