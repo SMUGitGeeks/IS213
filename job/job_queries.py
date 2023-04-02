@@ -42,10 +42,10 @@ def resolve_jobs(obj, info, skill_name=None):
     return payload
 
 # create job
-def resolve_create_job(obj, info, job_id, job_role, job_description, job_company):
+def resolve_create_job(obj, info, job_role, job_description, job_company):
     try:
         job = Job(
-            job_id=job_id, job_role=job_role, job_description=job_description, job_company=job_company
+            job_role=job_role, job_description=job_description, job_company=job_company
         )
         db.session.add(job)
         db.session.commit()
