@@ -21,14 +21,15 @@ job_URL = "http://localhost:5002/"
 email_URL = "http://localhost:5008/"
 #error_URL = "http://localhost:5004/"
 
-
-# Create Job Microservice Steps
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# 1. Create Job Microservice Steps
 #   -> Job Creation
 #       -> Get new job from UI 
 #       -> send creation request to job microservice 
 #       -> receive status 
 #       -> save job record (if success) 
 #       -> return status to UI
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
  # ====================== Get Jobs from UI ======================
@@ -88,7 +89,6 @@ def create_job():
 def add_job(record):
     # -> send new job to job microservice 
     # -> receive status 
-
 
     print('\n############## Invoking job microservice ##############')
 
@@ -229,8 +229,26 @@ def invoke_error_microservice(json, microservice):
         }),500
 
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# 2. Send Data to Email Microservice Steps
+#    -> Create time based function
+#    -> Student Email Retrieval
+#    -> Get job dictionary from new_jobs_storage
+#    -> Send data to email microservice
+#    -> Clear job dictionary in new_jobs_storage 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    
+
+print('\n############## Invoking student microservice ##############')
+# ====================== Get list of emails ======================
+email_query = "mutation{ create_job_skill(job_id:\"" + str(job_id) + "\", skill_name:\"" + jobskill + "\"){ success errors }}"
+
+        data = {
+            'query': email_query
+        }
+
+sub_emails = invoke_http(student_URL + 'graphql', method='POST', json=data)
+
 
 
 # while True():
