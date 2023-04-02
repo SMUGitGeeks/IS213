@@ -1,0 +1,6 @@
+ariadne==0.18.1
+Flask==2.2.3
+Flask-Cors==3.0.10
+Flask-SQLAlchemy==3.0.3
+mysql-connector-python==8.0.32
+SQLAlchemy==2.0.6

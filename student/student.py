@@ -8,11 +8,8 @@ from student_models import db
 from student_queries import *
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/module'
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/student'
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/student' or 'mysql+mysqlconnector://root:root@localhost:3306/module' or environ.get('dbURL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_recycle': 299}
 app.app_context().push()
 db.init_app(app)
 db.create_all()
@@ -49,6 +46,26 @@ def graphql_server():
     )
     status_code = 200 if success else 400
     return jsonify(result), status_code
+
+@app.route('/students/<string:student_id>/modules')
+def find_by_student_id(student_id):
+    modules = StudentModule.query.filter_by(student_id=student_id).all()
+    if len(modules):
+        return jsonify(
+            {
+                "code": 200,
+                "data": [module.to_dict() for module in modules]
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "data": {
+                "student_id": student_id
+            },
+            "message": "Student not found."
+        }
+    ), 404
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0",port=5001, debug=True)
