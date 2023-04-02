@@ -43,6 +43,11 @@ def match(student_id):
     print('\n-----Invoking student microservice-----')
 
     # Verify valid student_id ===============================
+    if not student_id.isnumeric():
+        return {
+            'code': 400,
+            'message': 'Invalid Student ID.'
+        }
     student_query = "query { get_student (student_id:" + student_id + ") { student { student_id } success errors } }"
     data = {
         'query': student_query
