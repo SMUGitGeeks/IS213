@@ -162,7 +162,8 @@ def match(student_id):
     sorted_jobs_list = []
     for a_tuple in sorted_job_tuple_list:
         print(a_tuple)
-        sorted_jobs_list.append(a_tuple[1]['data']['data'])
+        # sorted_jobs_list.append(a_tuple[1]['data']['data'])
+        sorted_jobs_list.append(a_tuple[1]['data'])
 
     return {
         "code": 200,
