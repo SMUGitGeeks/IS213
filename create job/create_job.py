@@ -241,13 +241,40 @@ def invoke_error_microservice(json, microservice):
 
 print('\n############## Invoking student microservice ##############')
 # ====================== Get list of emails ======================
-email_query = "mutation{ create_job_skill(job_id:\"" + str(job_id) + "\", skill_name:\"" + jobskill + "\"){ success errors }}"
-
-        data = {
-            'query': email_query
+email_query = """
+query {
+    get_students {
+        students {
+            student_name
+            email
+            is_subscribed
         }
+        success
+        errors
+    }
+}
+"""
+
+data = {
+        'query': email_query
+}
 
 sub_emails = invoke_http(student_URL + 'graphql', method='POST', json=data)
+
+students = sub_emails['data']['get_students']['students']
+
+# get students only who is subscribed
+subscribed_students = [student for student in students if student['is_subscribed']]
+
+print(subscribed_students)
+
+new_jobs = NewJobs()
+new_jobs = new_jobs.job_dict
+print(new_jobs)
+
+# message = jsonify({"subscribed_students": subscribed_students, "new_jobs":new_jobs})
+
+# amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="send.notify", body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
 
 
 
