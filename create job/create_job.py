@@ -87,6 +87,7 @@ def add_job(record):
     print('\n-----Invoking job microservice-----')
 
     # ====================== add new job record ======================
+
     job_id = record['job_id']
     job_role = record['job_role']
     job_description = record['job_description']
@@ -102,9 +103,11 @@ def add_job(record):
 
     try: 
         job_data = invoke_http(job_URL + 'graphql', method='POST', json=data)
-        print("======TEST 1======")
+        # print("======TEST 1======")
         print(job_data)
-        print("======TEST 2======")
+
+        # ADD ERROR CODE HERE
+
     except Exception as e:
         # Unexpected error in code
         exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -130,15 +133,16 @@ def add_job(record):
 
 
 
-    # add jobskills ===============
+    # ====================== add new job skill ======================
+
     jobskills = record['jobskills']
 
     for jobskill in jobskills:
 
-        jobskill_mutation = "mutation{ create_job_skill('job_id':" + str(job_id) + ", 'skill_name':" + jobskill + "){ success errors }}"
+        jobskill_mutation = "mutation{ create_job_skill(job_id:\"" + str(job_id) + "\", skill_name:\"" + jobskill + "\"){ success errors }}"
 
         data = {
-            'mutation': jobskill_mutation
+            'query': jobskill_mutation
         }
 
         try: 
@@ -154,6 +158,8 @@ def add_job(record):
                 "code": 500,
                 "message": "Failed to add job record"
             }), 500
+        
+    # =================================================================
 
 
 
