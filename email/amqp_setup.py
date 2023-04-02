@@ -20,7 +20,7 @@ connection = pika.BlockingConnection(
 channel = connection.channel()
 # Set up the exchange if the exchange doesn't exist
 # - use a 'topic' exchange to enable interaction
-exchangename="order_topic"
+exchangename="email_topic"
 exchangetype="topic"
 channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, durable=True)
     # 'durable' makes the exchange survive broker restarts
@@ -28,25 +28,23 @@ channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, dura
 # Here can be a place to set up all queues needed by the microservices,
 # - instead of setting up the queues using RabbitMQ UI.
 
-############   Error queue   #############
-#declare Error queue
-queue_name = 'Error'
+############   Email queue   #############
+queue_name = 'Email'
 channel.queue_declare(queue=queue_name, durable=True) 
-    # 'durable' makes the queue survive broker restarts
 
-#bind Error queue
-channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.error') 
+#bind Email queue
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.notify') 
     # bind the queue to the exchange via the key
     # any routing_key with two words and ending with '.error' will be matched
 
-############   Email queue    #############
-#declare Email queue
-queue_name = 'Email'
+############   Activity_Log queue    #############
+#delcare Activity_Log queue
+queue_name = 'Error'
 channel.queue_declare(queue=queue_name, durable=True)
     # 'durable' makes the queue survive broker restarts
 
 #bind Activity_Log queue
-channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='#') 
+channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.error') 
     # bind the queue to the exchange via the key
     # 'routing_key=#' => any routing_key would be matched
     
