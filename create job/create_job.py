@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import time
 
 import os, sys
 
@@ -8,7 +9,7 @@ from invokes import invoke_http
 
 from new_jobs_storage import NewJobs
 
-# import amqp_setup         # IMPORTANT -> Add this later
+import amqp_setup         # IMPORTANT -> Add this later
 import pika
 import json
 
@@ -44,7 +45,6 @@ def create_job():
                 # newjob_record should have both details of jobs and skills.
                 # Example is used:
                 # {
-                    # "job_id": 200,
                     # "job_role": "taxi driver",
                     # "job_company": "grab",
                     # "job_description": "vroom vroom",
@@ -94,12 +94,11 @@ def add_job(record):
 
     # ====================== add new job record ======================
 
-    job_id = record['job_id']
     job_role = record['job_role']
     job_description = record['job_description']
     job_company = record['job_company']
 
-    job_mutation = "mutation{ create_job(job_id:\"" +str(job_id)+ "\",    job_role:\"" +job_role+ "\", job_description: \"" +job_description+ "\", job_company:\"" +str(job_id)+ "\"){ success errors }}"
+    job_mutation = "mutation{ create_job(job_role:\"" +job_role+ "\", job_description: \"" +job_description+ "\", job_company:\"" +job_company+ "\"){ job{ job_id } success errors }}"
 
     data = {
             'query': job_mutation
@@ -109,14 +108,14 @@ def add_job(record):
 
     try: 
         job_data = invoke_http(job_URL + 'graphql', method='POST', json=data)
-        # print(job_data)
+        print(job_data)
 
         # ADD ERROR CODE HERE
         if job_data['code'] in range(200,300):
             if job_data['result']['data']['create_job']['errors']:
         
                 print('\n')
-                print(f"Failed to add job with job_id: {job_id}")
+                print(f"Failed to add job")
                 print('\n')
                 
                 result =  invoke_error_microservice(job_data, "job")
@@ -124,7 +123,9 @@ def add_job(record):
                 return result
             
             else:
-                    print(f"job with job_id: {job_id} successfully added")
+                    print(f"job successfully added")
+                    job_id = job_data['result']['data']['create_job']['job']['job_id']
+                    print(job_id)
 
     except Exception as e:
         # Unexpected error in code
@@ -147,7 +148,7 @@ def add_job(record):
 
         # print(jobskill)
 
-        jobskill_mutation = "mutation{ create_job_skill(job_id:\"" + str(job_id) + "\", skill_name:\"" + jobskill + "\"){ success errors }}"
+        jobskill_mutation = "mutation{ create_job_skill(job_id:" + str(job_id) + ", skill_name:\"" + jobskill + "\"){ success errors }}"
 
         data = {
             'query': jobskill_mutation
@@ -157,7 +158,9 @@ def add_job(record):
         try: 
             jobskill_data = invoke_http(job_URL + 'graphql', method='POST', json=data)
 
-            # print(jobskill_data)
+            
+
+            print(jobskill_data)
            
             if jobskill_data['code'] in range(200,300):
                 if jobskill_data['result']['data']['create_job_skill']['errors']:
@@ -191,8 +194,8 @@ def add_job(record):
     print('Adding job record into new_jobs_storage')
     new_jobs = NewJobs()
 
-    # Add a job to the job list
-    new_jobs._job_dict[job_id]= {"job role": job_role, "job description": job_description, "job company": job_company}
+    # Add a job to the job list 
+    new_jobs._job_dict[job_id]= {"job role": job_role, "job description": job_description, "job company": job_company} 
 
     print("\n")
     print("####################################")
@@ -238,49 +241,62 @@ def invoke_error_microservice(json, microservice):
 #    -> Clear job dictionary in new_jobs_storage 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
-print('\n############## Invoking student microservice ##############')
-# ====================== Get list of emails ======================
-email_query = """
-query {
-    get_students {
-        students {
-            student_name
-            email
-            is_subscribed
+@app.route("/send_email", methods=['POST'])
+def send_to_email():
+    print('\n############## Invoking student microservice ##############')
+    # ====================== Get list of emails ======================
+    email_query = """
+    query {
+        get_students {
+            students {
+                student_name
+                email
+                is_subscribed
+            }
+            success
+            errors
         }
-        success
-        errors
     }
-}
-"""
+    """
 
-data = {
-        'query': email_query
-}
+    data = {
+            'query': email_query
+    }
 
-sub_emails = invoke_http(student_URL + 'graphql', method='POST', json=data)
+    sub_emails = invoke_http(student_URL + 'graphql', method='POST', json=data)
 
-students = sub_emails['data']['get_students']['students']
+    print('##################################')
+    print(sub_emails)
+    print('##################################')
 
-# get students only who is subscribed
-subscribed_students = [student for student in students if student['is_subscribed']]
+    students = sub_emails['data']['get_students']['students']
 
-print(subscribed_students)
+    # get students only who is subscribed
+    subscribed_students = [student for student in students if student['is_subscribed']]
 
-new_jobs = NewJobs()
-new_jobs = new_jobs.job_dict
-print(new_jobs)
+    print(subscribed_students)
 
-# message = jsonify({"subscribed_students": subscribed_students, "new_jobs":new_jobs})
+    new_jobs = NewJobs()
+    jobs = new_jobs.job_dict
+    
+    print('new_jobs to send to email:')
+    print(jobs)
+    
 
-# amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="send.notify", body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+    message1 = {"subscribed_students": subscribed_students, "new_jobs":jobs}
+    print('\ntest100')
+    print(message1)
 
+    message = json.dumps(message1)
+    print('\ntest2')
+    print(message)
 
+    new_jobs.clear_list()
 
-# while True():
-#     objectname.publish_data()
-#     time.sleep(1 week)
+    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="send.notify", body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+
+    
+
 
 
 
