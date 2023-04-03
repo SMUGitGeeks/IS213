@@ -43,8 +43,9 @@ def graphql_server():
         context_value=request,
         debug=app.debug
     )
-    status_code = 200 if success else 400
-    return jsonify(result), status_code
+    status_code = 200
+    # this part does not work
+    return jsonify({"result": result, "code":status_code})
 
 @app.route('/job/<string:job_id>')
 def get_job_detail(job_id):
