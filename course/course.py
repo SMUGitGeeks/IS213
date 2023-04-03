@@ -11,8 +11,8 @@ from course_queries import resolve_course, resolve_courses, resolve_course_skill
 
 app = Flask(__name__)
 db_urls = [
-    'mysql+mysqlconnector://root:root@localhost:3306/module',
-    'mysql+mysqlconnector://root@localhost:3306/module',
+    'mysql+mysqlconnector://root:root@localhost:3306/course',
+    'mysql+mysqlconnector://root@localhost:3306/course',
     environ.get('dbURL')
 ]
 
