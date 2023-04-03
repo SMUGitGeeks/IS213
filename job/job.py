@@ -3,12 +3,27 @@ from ariadne import load_schema_from_path, make_executable_schema, graphql_sync,
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from os import environ
+from sqlalchemy import create_engine
 
 from job_models import db
 from job_queries import *
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/job' or 'mysql+mysqlconnector://root:root@localhost:3306/job' or environ.get('dbURL')
+db_urls = [
+    'mysql+mysqlconnector://root:root@localhost:3306/job',
+    'mysql+mysqlconnector://root@localhost:3306/job',
+    environ.get('dbURL')
+]
+
+for url in db_urls:
+    try:
+        engine = create_engine(url)
+        engine.connect()
+        app.config['SQLALCHEMY_DATABASE_URI'] = url
+        break
+    except:
+        print('db coonection fail')
+        continue
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.app_context().push()
 db.init_app(app)

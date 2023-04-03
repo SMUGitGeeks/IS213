@@ -2,6 +2,7 @@ from ariadne import load_schema_from_path, make_executable_schema, graphql_sync,
     ObjectType
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from sqlalchemy import create_engine
 from os import environ
 from course_models import db
 from course_queries import resolve_course, resolve_courses, resolve_course_skills, resolve_create_course, \
@@ -9,7 +10,21 @@ from course_queries import resolve_course, resolve_courses, resolve_course_skill
     resolve_delete_course_skill
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/course' or 'mysql+mysqlconnector://root@localhost:3306/course' or environ.get('dbURL')
+db_urls = [
+    'mysql+mysqlconnector://root:root@localhost:3306/course',
+    'mysql+mysqlconnector://root@localhost:3306/course',
+    environ.get('dbURL')
+]
+
+for url in db_urls:
+    try:
+        engine = create_engine(url)
+        engine.connect()
+        app.config['SQLALCHEMY_DATABASE_URI'] = url
+        break
+    except:
+        print('db coonection fail')
+        continue
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.app_context().push()
 db.init_app(app)
