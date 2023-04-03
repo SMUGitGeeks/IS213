@@ -59,7 +59,7 @@ def send_email(email_list, email_string):
             html_content=email_string
             )
 
-    sg = SendGridAPIClient('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')
+    sg = SendGridAPIClient('')
     response = sg.send(message)
 
 
