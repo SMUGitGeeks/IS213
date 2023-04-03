@@ -7,8 +7,9 @@
 
 import json
 import os
-
 import amqp_setup
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 
 monitorBindingKey='*.notify'
 
@@ -31,40 +32,38 @@ def callback(channel, method, properties, body): # required signature for the ca
 
 
 def processEmailInfo(email_info):
-    print("Recording an order log:")
+    print("Recording an email log:")
     print(email_info)
+    email_list = email_info["subscribed_students"]
+    print('#######################################')
+    print(email_list)
+    print('#######################################')
+    new_jobs_dict = email_info["new_jobs"]
+    email_string = '<table border="1"><tr><th>Job ID</th><th>Job Role</th><th>Job Description</th><th>Job Company</th></tr>'
+    for key in new_jobs_dict:
+        new_job_id = key
+        new_job_info_dict = new_jobs_dict[key]
+        new_job_role = new_job_info_dict["job role"]
+        new_job_description = new_job_info_dict["job description"]
+        new_job_company = new_job_info_dict["job company"]
+        email_string += '<tr><th>' + new_job_id + '</th><td>' + new_job_role + '</td><td>' + new_job_description + '</td><td>' + new_job_company + '</td></tr>'
+    email_string += '</table>'
+    send_email(email_list, email_string)
+    
+
+def send_email(email_list, email_string):
+    message = Mail(
+            from_email='glen.low.2021@scis.smu.edu.sg',
+            to_emails=email_list,
+            subject='New Jobs This Month!',
+            html_content=email_string
+            )
+
+    sg = SendGridAPIClient('')
+    response = sg.send(message)
 
 
 if __name__ == "__main__":  # execute this program only if it is run as a script (not by 'import')
     print("\nThis is " + os.path.basename(__file__), end='')
     print(": monitoring routing key '{}' in exchange '{}' ...".format(monitorBindingKey, amqp_setup.exchangename))
     receiveEmailInfo()
-
-import sendgrid
-
-sg = sendgrid.SendGridAPIClient('')
-data = {
-  "personalizations": [
-    {
-      "to": [
-        {
-          "email": "glenlow12374@gmail.com"
-        }
-      ],
-      "subject": "Sending with SendGrid is Fun"
-    }
-  ],
-  "from": {
-    "email": "glen.low.2021@scis.smu.edu.sg"
-  },
-  "content": [
-    {
-      "type": "text/plain",
-      "value": "and easy to do anywhere, even with Python"
-    }
-  ]
-}
-response = sg.client.mail.send.post(request_body=data)
-print(response.status_code)
-print(response.body)
-print(response.headers)
