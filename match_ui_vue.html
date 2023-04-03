@@ -104,6 +104,7 @@
                 :company="job['job_company']"
                 :description="job['job_description']"
                 :link="temp_link"
+                :id="job['job_id']"
                 v-for="job in matched_jobs"
                 >
                 </job-component>
@@ -117,7 +118,7 @@
 
         const app = Vue.createApp({
             computed: {
-                haveJobs: function() {
+                haveJobs () {
                     return this.jobs.length > 0;
                 }
             },
@@ -146,6 +147,7 @@
                                     this.message = data.message;
                                 } else {
                                     this.jobs = data.data;
+                                    console.log(this.jobs)
                                 }
                             })
                             .catch(error => {
@@ -185,6 +187,10 @@
                                     this.hasError = true
                                 });
                 },
+                applyJobs () {
+                    console.log(data)
+                }
+
             },
             created () {
                 // on Vue instance created, load the book list
@@ -193,15 +199,25 @@
         });
 
         app.component('job-component', {
-            props: [ 'role', 'company', 'description', 'link' ],
+            props: [ 'role', 'company', 'description', 'link', 'id' ],
 
             template: `
             <div class="card w-100 p-2 my-2">
                 <div class="card-body">
-                    <h5 class="card-title">{{ role }}</h5>
-                    <h6 class="card-subtitle mb-2 text-body-secondary">{{ company }}</h6>
-                    <p class="card-text">{{ description }}</p>
-                    <a :href="link" class="card-link">Visit Company Page</a>
+                    <div class="row">
+                        <div class="col-10">
+                            <h5 class="card-title">{{ role }}</h5>
+                            <h6 class="card-subtitle mb-2 text-body-secondary">{{ company }}</h6>
+                            <p class="card-text">{{ description }}</p>
+                            <a :href="link" class="card-link">Visit Company Page</a>
+                        </div>
+                        <div class="col">
+                            <button type="button" class="btn btn-sm btn-primary text-center" @click="applyJobs()">Apply</button>
+                            <p>{{ id }}</p>
+                        </div>
+                    </div>
+                    
+                    
                 </div>
             </div>
             `
