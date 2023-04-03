@@ -10,8 +10,8 @@ from job_queries import *
 
 app = Flask(__name__)
 db_urls = [
-    'mysql+mysqlconnector://root:root@localhost:3306/module',
-    'mysql+mysqlconnector://root@localhost:3306/module',
+    'mysql+mysqlconnector://root:root@localhost:3306/job',
+    'mysql+mysqlconnector://root@localhost:3306/job',
     environ.get('dbURL')
 ]
 

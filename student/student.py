@@ -10,8 +10,8 @@ from student_queries import *
 
 app = Flask(__name__)
 db_urls = [
-    'mysql+mysqlconnector://root:root@localhost:3306/module',
-    'mysql+mysqlconnector://root@localhost:3306/module',
+    'mysql+mysqlconnector://root:root@localhost:3306/student',
+    'mysql+mysqlconnector://root@localhost:3306/student',
     environ.get('dbURL')
 ]
 
