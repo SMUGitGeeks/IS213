@@ -60,21 +60,21 @@ def match(student_id):
 
     # Get Student Modules ==================================
     # ++++ USING GRAPHQL +++++
-    # student_modules_query = "query { get_student_modules (student_id: " + student_id + ") { student_modules { module_id } success errors } }"
-    # data = {
-    #     'query': student_modules_query
-    # }
-    # student_modules_data = invoke_http(student_URL + 'graphql', method='POST', json=data)
-    # student_modules = student_modules_data['data']['get_student_modules']['student_modules']
+    student_modules_query = "query { get_student_modules (student_id: " + student_id + ") { student_modules { module_id } success errors } }"
+    data = {
+        'query': student_modules_query
+    }
+    student_modules_data = invoke_http(student_URL + 'graphql', method='POST', json=data)
+    student_modules = student_modules_data['data']['get_student_modules']['student_modules']
 
-    # if not student_modules_data['data']['get_student_modules']['success']:
-    #     return invoke_error_microservice(student_modules_data, "student")
+    if not student_modules_data['data']['get_student_modules']['success']:
+        return invoke_error_microservice(student_modules_data, "student")
 
     # ++++ USING REST API +++++
-    student_modules_result = invoke_http(student_URL + 'students/' + student_id + '/modules')
-    if student_modules_result['code'] != 200:
-        return invoke_error_microservice(student_modules_result, 'student')
-    student_modules = student_modules_result['data']
+    # student_modules_result = invoke_http(student_URL + 'students/' + student_id + '/modules')
+    # if student_modules_result['code'] != 200:
+    #     return invoke_error_microservice(student_modules_result, 'student')
+    # student_modules = student_modules_result['data']
 
     # Create list of modules
     student_modules_list = []
@@ -112,42 +112,42 @@ def match(student_id):
     # Get Jobs with skills ============
     # +++++++ USING GRAPHQL +++++++
     job_frequency_dict = {}
-    # for skill in student_skills_list:
-    #     job_query = "query { get_jobs(skill_name: \"" + skill + "\") { jobs { job_id job_role job_description job_company } success errors } }"
-    #     data = {
-    #         'query': job_query
-    #     }
-    #     job_data = invoke_http(job_URL + 'graphql', method='POST', json=data)
-
-    #     # Error micro invoked ============
-    #     if not job_data['data']['get_jobs']['success']:
-    #         return invoke_error_microservice(job_data, "job")
-        
-    #     jobs = job_data['data']['get_jobs']['jobs']
-
-    #     if jobs != []:
-    #         for job_detail in jobs:
-    #             job_id = job_detail['job_id']
-    #             print('job_id: ' + job_id)
-
-    #             if job_id in job_frequency_dict:
-    #                 job_frequency_dict[job_id][0] += 1
-    #             else:
-    #                 job_frequency_dict[job_id] = [1, job_detail]
-
-    # ++++++ USING REST API ++++++
     for skill in student_skills_list:
-        jobs_result = invoke_http(job_URL + 'job/' + skill + '/jobs')
-        if jobs_result['code'] == 200:
-            for job_skill_detail in jobs_result['data']:
-                job_id = str(job_skill_detail['job_id'])
+        jobs_query = "query { get_jobs(skill_name: \"" + skill + "\") { jobs { job_id job_role job_description job_company } success errors } }"
+        data = {
+            'query': jobs_query
+        }
+        jobs_data = invoke_http(job_URL + 'graphql', method='POST', json=data)
+
+        # Error micro invoked ============
+        if not jobs_data['data']['get_jobs']['success']:
+            return invoke_error_microservice(jobs_data, "job")
+        
+        jobs = jobs_data['data']['get_jobs']['jobs']
+
+        if jobs != []:
+            for job_detail in jobs:
+                job_id = str(job_detail['job_id'])
                 print('job_id: ' + job_id)
 
-                job_detail_result = invoke_http(job_URL + 'job/' + job_id)
                 if job_id in job_frequency_dict:
                     job_frequency_dict[job_id]['freq'] += 1
                 else:
-                    job_frequency_dict[job_id] = {'freq': 1, 'data': job_detail_result}
+                    job_frequency_dict[job_id] = {'freq': 1, 'data': job_detail}
+
+    # ++++++ USING REST API ++++++
+    # for skill in student_skills_list:
+    #     jobs_result = invoke_http(job_URL + 'job/' + skill + '/jobs')
+    #     if jobs_result['code'] == 200:
+    #         for job_skill_detail in jobs_result['data']:
+    #             job_id = job_skill_detail['job_id']
+    #             print('job_id: ' + job_id)
+
+    #             job_detail_result = invoke_http(job_URL + 'job/' + job_id)
+    #             if job_id in job_frequency_dict:
+    #                 job_frequency_dict[job_id]['freq'] += 1
+    #             else:
+    #                 job_frequency_dict[job_id] = {'freq': 1, 'data': job_detail_result}
 
     # Return if no jobs ==================
     if job_frequency_dict == {}:
@@ -162,7 +162,8 @@ def match(student_id):
     sorted_jobs_list = []
     for a_tuple in sorted_job_tuple_list:
         print(a_tuple)
-        sorted_jobs_list.append(a_tuple[1]['data']['data'])
+        # sorted_jobs_list.append(a_tuple[1]['data']['data'])
+        sorted_jobs_list.append(a_tuple[1]['data'])
 
     return {
         "code": 200,
@@ -180,7 +181,7 @@ def invoke_error_microservice(json, microservice):
     return {
             "code": 500,
             "data": json,
-            "message": f"{microservice} failed, sent for error handling."
+            "message": f"{microservice} failed, sent for error handling. {str(json['errors'])}"
         }
 
 
