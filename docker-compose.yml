@@ -1,5 +1,8 @@
 version: "3.8"
 
+volumes:
+  rabbitmq_data:
+  
 services:
  
   ###################################
@@ -8,7 +11,7 @@ services:
   student:
     build:
       context: ./
-      dockerfile: student\student.Dockerfile
+      dockerfile: ./student.Dockerfile
     image: student:1.0
     restart: always
     environment:
@@ -21,7 +24,7 @@ services:
   job:
     build:
       context: ./
-      dockerfile: job\job.Dockerfile
+      dockerfile: ./job.Dockerfile
     image: job:1.0
     restart: always
     environment:
@@ -34,12 +37,26 @@ services:
   module:
     build:
       context: ./
-      dockerfile: module\module.Dockerfile
+      dockerfile: ./module.Dockerfile
     image: module:1.0
     restart: always
     environment:
       dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/module
       PYTHONUNBUFFERED: 1
+
+  ####################################
+  # RabbitMQ: The messaging broker   
+  ####################################
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: esd-rabbit
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes: 
+      - rabbitmq_data:/var/lib/rabbitmq
+
 
   ###############################################
   # Match job: The Match job microservice
@@ -47,7 +64,7 @@ services:
   match_job:
     build:
       context: ./
-      dockerfile: match_job\match_job.Dockerfile
+      dockerfile: ./match_job.Dockerfile
     image: match_job:1.0
     restart: always
     depends_on:
@@ -55,6 +72,8 @@ services:
       - module
       - job
     environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
       student_URL: http://student:5001/
       module_URL: http://module:5000/
       job_URL: http://job:5002/
