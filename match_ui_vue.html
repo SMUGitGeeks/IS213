@@ -115,6 +115,7 @@
     <script>
         const match_job_URL = "http://localhost:5005";
         const job_URL = "http://localhost:5002";
+        const apply_job_URL = "http://localhost:5006"
 
         const app = Vue.createApp({
             computed: {
@@ -125,12 +126,17 @@
             data() {
                 return {
                     student_id: "",
+                    job_id: "",
                     jobs: [],
                     matched_jobs: [],
+                    jobs_data: [],
+                    courses: [],
+                    modules: [],
                     temp_link: 'https://google.com',
                     hasSearched: false,
                     isSearching: false,
                     hasError: false,
+                    suitability: false,
                     message: "There is a problem retrieving data, please try again later."
                 };
             },
@@ -189,7 +195,41 @@
                                 });
                 },
                 applyJobs () {
-                    console.log(data)
+                    console.log(this.job_id)
+                    actual_job_id = this.job_id - 1
+                    const response =
+                            fetch(`${apply_job_URL}/apply/${this.student_id}/${actual_job_id}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log(data);
+                                    if (data.code === 200) {
+                                        this.suitability = data.message;
+                                        this.jobs_data = data.data
+                                    }
+
+                                    if (this.suitability) {
+                                        // is suitable
+
+                                    }
+                                    else {
+                                        // is not suitable
+                                        this.lack_skills = data.lack_skills
+                                        this.courses = data.courses 
+                                        if (data.modules) {
+                                            this.modules = data.modules
+                                        }
+                                        
+                                    }
+                                })
+                                .catch(error => {
+                                    // Errors when calling the service; such as network error, 
+                                    // service offline, etc
+                                    console.log(this.message + error);
+                                    this.hasError = true
+                                });
+                },
+                openForm () {
+
                 }
 
             },
@@ -216,6 +256,7 @@
                             <button type="button" class="btn btn-sm btn-primary text-center" @click="applyJobs()">Apply</button>
                             <p>{{ id }}</p>
                         </div>
+                        
                     </div>
                     
                     
