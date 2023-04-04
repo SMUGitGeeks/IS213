@@ -2,15 +2,16 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 import os, sys
+from os import environ
 
 from invokes import invoke_http
 
 app = Flask(__name__)
 CORS(app)
 
-student_URL = "http://localhost:5001/"
-job_URL = "http://localhost:5002/"
-module_URL = "http://localhost:5000/"
+student_URL = environ.get('student_URL') or "http://localhost:5001/" or input("Enter student service URL: ")
+job_URL = environ.get('job_URL') or "http://localhost:5002/" or input("Enter job service URL: ")
+module_URL = environ.get('module_URL') or "http://localhost:5000/" or input("Enter module service URL: ")
 error_URL = ""
 
 @app.route('/match/<string:student_id>')
