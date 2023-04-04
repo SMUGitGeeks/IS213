@@ -61,9 +61,9 @@ def get_suitability(student_id, job_id):
         'query': job_skills_query
     }
     job_skills_data = invoke_http(job_URL + 'graphql', method='POST', json=data)
-    if not job_skills_data['data']['get_job_skills']['success']:
+    if not job_skills_data['result']['data']['get_job_skills']['success']:
         return invoke_error_microservice(job_skills_data, "job")
-    job_skills = job_skills_data['data']['get_job_skills']['job_skills']
+    job_skills = job_skills_data['result']['data']['get_job_skills']['job_skills']
 
     # Create job skill list
     job_skills_list = []
