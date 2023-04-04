@@ -5,6 +5,7 @@ import os, sys
 from os import environ
 
 from invokes import invoke_http
+import amqp_setup
 
 app = Flask(__name__)
 CORS(app)
@@ -40,7 +41,7 @@ def get_job(student_id):
 
 
 def match(student_id):
-    
+    amqp_setup.check_setup()
     try:
         print('\n-----Invoking student microservice-----')
         # Verify valid student_id ===============================
@@ -213,9 +214,10 @@ def match(student_id):
 
 def invoke_error_microservice(json, microservice):
     print(f'\n\n-----Invoking error microservice as {microservice} fails-----')
-    invoke_http(error_URL, method="POST", json=json)
+    # invoke_http(error_URL, method="POST", json=json)
     # - reply from the invocation is not used; 
-    # continue even if this invocation fails
+    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key= microservice +".error", 
+            body=json, properties=pika.BasicProperties(delivery_mode = 2)) 
     print("Sent to the error microservice:", json)
 
     # 7. Return error
