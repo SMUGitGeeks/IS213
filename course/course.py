@@ -10,10 +10,10 @@ from course_queries import resolve_course, resolve_courses, resolve_course_skill
     resolve_delete_course_skill
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 db_urls = [
     'mysql+mysqlconnector://root:root@localhost:3306/course',
-    'mysql+mysqlconnector://root@localhost:3306/course',
-    environ.get('dbURL')
+    'mysql+mysqlconnector://root@localhost:3306/course'
 ]
 
 for url in db_urls:

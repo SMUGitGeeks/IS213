@@ -9,10 +9,10 @@ from job_models import db
 from job_queries import *
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 db_urls = [
     'mysql+mysqlconnector://root:root@localhost:3306/job',
-    'mysql+mysqlconnector://root@localhost:3306/job',
-    environ.get('dbURL')
+    'mysql+mysqlconnector://root@localhost:3306/job'
 ]
 
 for url in db_urls:
