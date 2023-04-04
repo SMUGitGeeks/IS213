@@ -1,10 +1,8 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import time
 
 import os, sys
 
-import requests
 from invokes import invoke_http
 
 from new_jobs_storage import NewJobs
@@ -72,7 +70,7 @@ def create_job():
             
             return jsonify({
                 "code": 500,
-                "message": "place_order.py internal error: " + ex_str
+                "message": "create_job.py internal error: " + ex_str
             }), 500
         
         
@@ -97,6 +95,7 @@ def add_job(record):
     job_role = record['job_role']
     job_description = record['job_description']
     job_company = record['job_company']
+
 
     job_mutation = "mutation{ create_job(job_role:\"" +job_role+ "\", job_description: \"" +job_description+ "\", job_company:\"" +job_company+ "\"){ job{ job_id } success errors }}"
 
@@ -273,6 +272,7 @@ def send_to_email():
 
     # get students only who is subscribed
     subscribed_students = [student['email'] for student in students if student['is_subscribed']]
+    # subscribed_students = ['glenlow12374@gmail.com', 'dx19999@hotmail.com', 'ssy.darryl@gmail.com']
 
     print(subscribed_students)
 
@@ -292,6 +292,8 @@ def send_to_email():
     print(message)
 
     new_jobs.clear_list()
+
+    amqp_setup.check_setup()
 
     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="send.notify", body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
 
