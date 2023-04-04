@@ -8,7 +8,7 @@ from student_models import db
 from student_queries import *
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/student' or 'mysql+mysqlconnector://root:root@localhost:3306/module' or environ.get('dbURL')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/module' or environ.get('dbURL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.app_context().push()
 db.init_app(app)
