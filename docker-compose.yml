@@ -1,0 +1,78 @@
+version: "3.8"
+
+services:
+ 
+  ###################################
+  # Student: The Student microservice
+  ###################################
+  student:
+    build:
+      context: ./
+      dockerfile: student\student.Dockerfile
+    image: g6t1/student:esd
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/student
+      PYTHONUNBUFFERED: 1
+
+  ###################################
+  # Module: The Module microservice
+  ###################################
+  module:
+    build:
+      context: ./
+      dockerfile: module\module.Dockerfile
+    image: g6t1/module:esd
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/module
+      PYTHONUNBUFFERED: 1
+
+  ###################################
+  # Job: The Job microservice
+  ###################################
+  job:
+    build:
+      context: ./
+      dockerfile: job\job.Dockerfile
+    image: g6t1/job:esd
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/job
+      PYTHONUNBUFFERED: 1
+
+  ###################################
+  # Course: The Course microservice
+  ###################################
+  course:
+    build:
+      context: ./
+      dockerfile: course\course.Dockerfile
+    image: g6t1/course:esd
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/course
+      PYTHONUNBUFFERED: 1
+
+  ###############################################
+  # Apply Job: The Apply Job microservice
+  ###############################################
+  apply_job:
+    build:
+      context: ./
+      dockerfile: apply_job\apply_job.Dockerfile
+    image: g6t1/apply_job:esd
+    restart: always
+    depends_on:
+      - student
+      - job
+      - module
+      - course
+    environment:
+      student_URL: http://student:5001/
+      module_URL: http://module:5000/
+      job_URL: http://job:5002/
+      course_URL: http://course:5003
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5006:5006"
