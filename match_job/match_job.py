@@ -91,7 +91,7 @@ def match(student_id):
 
         return jsonify({
             "code": 500,
-            "message": "Failed to invoke job microservice"
+            "message": "Failed to invoke Student microservice"
         }), 500
 
 
@@ -130,7 +130,7 @@ def match(student_id):
 
         return jsonify({
             "code": 500,
-            "message": "Failed to invoke job microservice"
+            "message": "Failed to invoke Module microservice"
         }), 500
 
 
@@ -148,10 +148,10 @@ def match(student_id):
             jobs_data = invoke_http(job_URL + 'graphql', method='POST', json=data)
 
             # Error micro invoked ============
-            if not jobs_data['data']['get_jobs']['success']:
+            if not jobs_data['result']['data']['get_jobs']['success']:
                 return invoke_error_microservice(jobs_data, "job")
             
-            jobs = jobs_data['data']['get_jobs']['jobs']
+            jobs = jobs_data['result']['data']['get_jobs']['jobs']
 
             if jobs != []:
                 for job_detail in jobs:
