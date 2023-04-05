@@ -46,9 +46,27 @@ def graphql_server():
     # this part does not work
     return jsonify({"result": result, "code": status_code})
 
+@app.route('/jobs')
+def get_jobs():
+    jobs = Job.query.all()
+    if len(jobs):
+        return jsonify(
+            {
+                "code": 200,
+                "data": [job.to_dict() for job in jobs]
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "data": {},
+            "message": "No jobs found."
+        }
+    ), 404
+
 
 @app.route('/job/<string:job_id>')
-def get_job_detail(job_id):
+def get_job(job_id):
     job = Job.query.get(job_id)
     if job:
         return jsonify(
@@ -68,8 +86,29 @@ def get_job_detail(job_id):
     ), 404
 
 
+@app.route('/job/<string:job_id>/skills')
+def get_skills_by_job(job_id):
+    skills = JobSkill.query.filter_by(job_id=job_id).all()
+    if len(skills):
+        return jsonify(
+            {
+                "code": 200,
+                "data": [skill.to_dict() for skill in skills]
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "data": {
+                "job_id": job_id
+            },
+            "message": "Skills not found."
+        }
+    ), 404
+
+
 @app.route('/job/<string:skill_name>/jobs')
-def find_by_skill_name(skill_name):
+def get_jobs_by_skill(skill_name):
     jobs = JobSkill.query.filter_by(skill_name=skill_name).all()
     # return [module.to_dict() for module in modules]
     if len(jobs):
@@ -89,24 +128,52 @@ def find_by_skill_name(skill_name):
         }
     ), 404
 
-
-# REST API
-@app.route('/jobs')
-def get_all_jobs():
-    jobs = Job.query.all()
-    if len(jobs):
+@app.route('/job', methods=['POST'])
+def create_job():
+    job = Job(
+        job_role=request.json['job_role'],
+        job_description=request.json['job_description'],
+        job_company=request.json['job_company'],
+    )
+    db.session.add(job)
+    db.session.commit()
+    if job:
         return jsonify(
             {
-                "code": 200,
-                "data": [job.to_dict() for job in jobs]
+                "code": 201,
+                "data": job.to_dict()
             }
         )
     return jsonify(
         {
-            "code": 404,
-            "message": "No jobs found."
+            "code": 400,
+            "data": {},
+            "message": "Job not created."
         }
-    ), 404
+    ), 400
+
+@app.route('/job/<string:job_id>', methods=['POST'])
+def create_job_skill(job_id):
+    job_skill = JobSkill(
+        job_id=job_id,
+        skill_name=request.json['skill_name'],
+    )
+    db.session.add(job_skill)
+    db.session.commit()
+    if job_skill:
+        return jsonify(
+            {
+                "code": 201,
+                "data": job_skill.to_dict()
+            }
+        )
+    return jsonify(
+        {
+            "code": 400,
+            "data": {},
+            "message": "Job Skill not created."
+        }
+    ), 400
 
 
 if __name__ == '__main__':
