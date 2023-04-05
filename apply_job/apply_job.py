@@ -1,4 +1,6 @@
+import json
 import os
+import sys
 from os import environ
 
 import requests
@@ -198,7 +200,7 @@ def get_suitability(student_id, job_id):
         amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"{microservice}.error", 
             body=message, properties=pika.BasicProperties(delivery_mode = 2))
         
-        return jsonify({
+        return json({
             "code": 500,
             "message": "apply_job.py internal error: " + ex_str
         }), 500
