@@ -10,7 +10,7 @@ from job_queries import *
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/job'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/job'
 # db_urls = [
 #     'mysql+mysqlconnector://root:root@localhost:3306/job',
 #     'mysql+mysqlconnector://root@localhost:3306/job',
@@ -30,7 +30,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.app_context().push()
 db.init_app(app)
 db.create_all()
-CORS(app)
+CORS(app, , resources={r"/*": {"origins": "*"}})
 
 
 # We need to assign the resolvers to the corresponding fields in the Query and Mutation types

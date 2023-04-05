@@ -138,97 +138,33 @@
         
     </div>
 
-    <!-- Modal -->
-    <div v-show="isModalVisible">
-        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" >
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="myFormLabel">Checking Skills</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        
-                        <form>
-                            <div class="row" v-show="!isSuitable && !hasproceed">
-        
-                                <table class="mx-2">
-                                    <tr>
-                                        <th>You are missing some skills. The skills are:</th>
-                                    </tr>
-                                    <tr>
-                                        <td v-for="skill in lack_skills">
-                                            {{ skill }}
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th>Here are some courses you can take</th>
-                                    </tr>
-                                    <tr>
-                                        <td v-for="course in courses">
-                                            {{ course['course_name'] }} <br>
-                                            {{ course['course_link'] }}
-                                        </td>
-                                    </tr>
-                                </table>
-            
-                                <br><br>
-                                <p>Would you still like to proceed with the application?</p>
-                                <button type="button" class="btn btn-success" @click="proceed()">Yes</button>
-                                
-                            </div>
-                            <div v-show="hasproceed">
-                                <div class="row">
-                                    Student ID: <input v-model="student_id" placeholder="Insert StudentID">                  
-                                    <input type="file" id="resume" name="resume">
-                                </div>
-                                
-                                <div class="row">
-                                    <button type="submit" class="btn" @click="sendResume(resume)">Submit</button>
-                                </div>
-                                <p v-if="uploadText !== ''">
-                                    {{ uploadText }}
-                                </p>
-                            </div>
-                            
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="stopProceed()">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>  
-    </div>
-    
-        
-
-
     <script>
         const match_job_URL = "http://localhost:5005";
         const job_URL = "http://localhost:5002";
         const apply_job_URL = "http://localhost:5006"
+        student_id = sessionStorage.getItem("apply_studentID")
+        isValidStudent = sessionStorage.getItem("isValidStudent")
+        console.log(student_id)
+        
 
         const app = Vue.createApp({
             data() {
                 return {
-                    student_id: "",
+                    student_id: student_id,
                     job_id: "",
                     jobs: [],
                     matched_jobs: [],
-                    courses: [{'course_name': 'lol'}],
+                    courses: [],
                     modules: [],
                     lack_skills: [],
                     temp_link: 'https://google.com',
                     hasSearched: false,
                     isSearching: false,
                     hasError: false,
-                    isSuitable: false,
                     hasproceed: false,
                     uploadText: false,
-                    isValidStudent: false,
+                    isValidStudent: isValidStudent,
                     message: "There is a problem retrieving data, please try again later.",
-                    isModalVisible: false,
                 };
             },
             methods: {
@@ -313,7 +249,14 @@
                                         this.courses = data.data.courses 
                                         this.modules = data.data.modules
                                     }
-                                    this.isModalVisible = true
+                                
+                                    sessionStorage.setItem("apply_studentID", this.student_id);
+                                    sessionStorage.setItem("apply_jobID", this.job_id);
+                                    sessionStorage.setItem("apply_courses", JSON.stringify(this.courses));
+                                    sessionStorage.setItem("apply_lack_skills", this.lack_skills);
+                                    sessionStorage.setItem("apply_modules", JSON.stringify(this.modules));
+                                    sessionStorage.setItem('isValidStudent', this.isValidStudent)
+                                    location.replace("./apply_ui_vue.html")
                                 })
                                 .catch(error => {
                                     // Errors when calling the service; such as network error, 
@@ -322,54 +265,35 @@
                                     this.hasError = true
                                 });
                 },
-                proceed() {
-                    this.hasproceed = true
-                },
-                stopProceed() {
-                    this.hasproceed = false
-                    this.isSuitable = false
-                },
-                sendResume (file) {
-                    const response =
-                            fetch(`${apply_job_URL}/apply/${this.student_id}/${this.job_id}`)
-                                .then(response => response.json())
-                                .then(data => {
-                                    console.log(data);
-                                    this.uploadText = data
-                                })
-                                .catch(error => {
-                                    // Errors when calling the service; such as network error, 
-                                    // service offline, etc
-                                    console.log(this.message + error);
-                                    this.hasError = true
-                                })
-                },
                 checkStudent() {
                     const response =
-                            fetch(`${match_job_URL}/${this.student_id}`)
-                                .then(response => response.json())
-                                .then(data => {
-                                    console.log(data);
-                                    if (data.code !== 200) {
-                                        this.message = data.message;
-                                        this.isValidStudent = false
-                                        this.hasError = true
-                                    } else {
-                                        this.matched_jobs = data.data;
-                                        this.hasError = false
-                                        this.isValidStudent = true
-                                    }
-                                })
-                                .catch(error => {
-                                    // Errors when calling the service; such as network error, 
-                                    // service offline, etc
-                                    console.log(this.message + error);
+                        fetch(`${match_job_URL}/${this.student_id}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(data);
+                                if (data.code !== 200) {
+                                    this.message = data.message;
+                                    this.isValidStudent = false
                                     this.hasError = true
-                                })
+                                } else {
+                                    this.matched_jobs = data.data;
+                                    this.hasError = false
+                                    this.isValidStudent = true
+                                }
+                                sessionStorage.setItem("apply_studentID", this.student_id);
+                                sessionStorage.setItem("isValidStudent", this.isValidStudent);
+                            })
+                            .catch(error => {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                console.log(this.message + error);
+                                this.hasError = true
+                            })
                 },
                 logOut() {
                     this.isValidStudent = false
                     this.hasError = false
+                    sessionStorage.clear()
                 },
                 displayAll() {
                     this.hasSearched = false
@@ -397,7 +321,7 @@
                             <a :href="link" class="card-link">Visit Company Page</a>
                         </div>
                         <div class="col">
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop" @click="$emit('apply', id)">Apply</button>
+                            <button type="button" class="btn btn-primary" @click="$emit('apply', id)">Apply</button>
                             <p display="none">{{ id }}</p>
                         </div>
                     </div>
