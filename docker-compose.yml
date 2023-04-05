@@ -3,12 +3,28 @@ version: "3.8"
 volumes:
   pgdata: 
   kongadata:
+  rabbitmq_data:
 
 networks:
   kong-net:
     driver: bridge
 
 services:
+  ###################################
+  # student: The Student microservice
+  ###################################
+  # student:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./student.Dockerfile
+  #   image: student:1.0
+  #   restart: always
+  #   environment:
+  #     dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/student
+  #     PYTHONUNBUFFERED: 1
+  #   ports:
+  #     - "5001:5001"
+
   ###################################
   # module: The Module microservice
   ###################################
@@ -83,10 +99,11 @@ services:
       file: docker-compose-student.yml
       service: student
     depends_on:
-      - student
       - module
       - job
     environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
       moduleURL: http://module:5000/
       studentURL: http://student:5001/
       jobURL: http://job:5002/
@@ -107,11 +124,12 @@ services:
       file: docker-compose-student.yml
       service: student
     depends_on:
-      - student
       - job
       - module
       - course
     environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
       moduleURL: http://module:5000/
       studentURL: http://student:5001/
       jobURL: http://job:5002/
@@ -123,44 +141,43 @@ services:
 ###############################################
   # Create job: The Create job microservice
   ###############################################
-  create_job:
-    build:
-      context: ./
-      dockerfile: ./create_job.Dockerfile
-    image: create_job:1.0
-    restart: always
-    extends:
-      file: docker-compose-student.yml
-      service: student
-    depends_on:
-      - student
-      - job
-      - rabbitmq
-    environment:
-      rabbit_host: rabbitmq
-      rabbit_port: 5672
-      studentURL: http://student:5001/
-      jobURL: http://job:5002/
-      PYTHONUNBUFFERED: 1
-    ports:
-      - "5100:5100"
+  # create_job:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./create_job.Dockerfile
+  #   image: create_job:1.0
+  #   restart: always
+  #   extends:
+  #     file: docker-compose-student.yml
+  #     service: student
+  #   depends_on:
+  #     - job
+  #     - rabbitmq
+  #   environment:
+  #     rabbit_host: rabbitmq
+  #     rabbit_port: 5672
+  #     studentURL: http://student:5001/
+  #     jobURL: http://job:5002/
+  #     PYTHONUNBUFFERED: 1
+  #   ports:
+  #     - "5100:5100"
 
 
   ###############################################
   # Email: The Email microservice
   ###############################################
-  email:
-    build:
-      context: ./
-      dockerfile: ./email.Dockerfile
-    image: email:1.0
-    restart: always
-    depends_on:
-      - rabbitmq
-    environment:
-      rabbit_host: rabbitmq
-      rabbit_port: 5672
-      PYTHONUNBUFFERED: 1
+  # email:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./email.Dockerfile
+  #   image: email:1.0
+  #   restart: always
+  #   depends_on:
+  #     - rabbitmq
+  #   environment:
+  #     rabbit_host: rabbitmq
+  #     rabbit_port: 5672
+  #     PYTHONUNBUFFERED: 1
 
 
   ####################################

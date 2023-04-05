@@ -191,50 +191,50 @@ def get_suitability(student_id, job_id):
         }), 500
 
 
-@app.route('/apply/<string:student_id>/<string:job_id>', methods=['POST'])
-def post_resume(student_id, job_id, resume):
-        amqp_setup.check_setup()
-        try:
-            # takes the resume
-            return(resume)
-            file = resume
-            url = "https://content.dropboxapi.com/2/files/upload"
+# @app.route('/apply/<string:student_id>/<string:job_id>', methods=['POST'])
+# def post_resume(student_id, job_id, resume):
+#         amqp_setup.check_setup()
+#         try:
+#             # takes the resume
+#             # return(resume)
+#             file = resume
+#             url = "https://content.dropboxapi.com/2/files/upload"
 
-            payload = file
-            path = "/" + student_id + "_" + job_id
+#             payload = file
+#             path = "/" + student_id + "_" + job_id
 
-            headers = {
-                    'Authorization': 'Bearer sl.Bb-oDML-7CjIRkPNO7UEXnHqfrQs4oYNQAmnDM73F3arwDMaXcOWNmFT138tw_5RtEqugcpC6OPuH7uJbh7WcbbxzXEsMb10AspaOG2kO7QAPjDk1a-OxTmv41C1Yw5_J0tHsGI',
-                    'Dropbox-API-Arg': '{"autorename":false,"mode":"add","mute":false,"path":"'+ path +'.pdf","strict_conflict":false}',
-                    'Content-Type': 'application/octet-stream'
-                    }
+#             headers = {
+#                     'Authorization': 'Bearer sl.Bb-oDML-7CjIRkPNO7UEXnHqfrQs4oYNQAmnDM73F3arwDMaXcOWNmFT138tw_5RtEqugcpC6OPuH7uJbh7WcbbxzXEsMb10AspaOG2kO7QAPjDk1a-OxTmv41C1Yw5_J0tHsGI',
+#                     'Dropbox-API-Arg': '{"autorename":false,"mode":"add","mute":false,"path":"'+ path +'.pdf","strict_conflict":false}',
+#                     'Content-Type': 'application/octet-stream'
+#                     }
 
-            response = requests.request("POST", url, headers=headers, data=payload)
+#             response = requests.request("POST", url, headers=headers, data=payload)
 
-            return(response.text)
+#             return(response.text)
         
-        except Exception as e:
-            # Unexpected error in code
-            print(f"\n\n-----Invoking error microservice as resume uploading fails.-----")
-            print(f"-----Publishing the error message with routing_key=resume.error-----")
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
-            print(ex_str)
+#         except Exception as e:
+#             # Unexpected error in code
+#             print(f"\n\n-----Invoking error microservice as resume uploading fails.-----")
+#             print(f"-----Publishing the error message with routing_key=resume.error-----")
+#             exc_type, exc_obj, exc_tb = sys.exc_info()
+#             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+#             ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
+#             print(ex_str)
 
-            code = 500
-            message = json.dumps({
-                "code": code,
-                "message": "apply_job.py internal error: " + ex_str
-            })
+#             code = 500
+#             message = json.dumps({
+#                 "code": code,
+#                 "message": "apply_job.py internal error: " + ex_str
+#             })
 
-            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"resume.error", 
-                body=message, properties=pika.BasicProperties(delivery_mode = 2))
+#             amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"resume.error", 
+#                 body=message, properties=pika.BasicProperties(delivery_mode = 2))
             
-            return json({
-                "code": 500,
-                "message": "apply_job.py internal error: " + ex_str
-            }), 500
+#             return json({
+#                 "code": 500,
+#                 "message": "apply_job.py internal error: " + ex_str
+#             }), 500
     
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for applying a job...")
