@@ -46,9 +46,27 @@ def graphql_server():
     # this part does not work
     return jsonify({"result": result, "code": status_code})
 
+@app.route('/jobs')
+def get_jobs():
+    jobs = Job.query.all()
+    if len(jobs):
+        return jsonify(
+            {
+                "code": 200,
+                "data": [job.to_dict() for job in jobs]
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "data": {},
+            "message": "No jobs found."
+        }
+    ), 404
+
 
 @app.route('/job/<string:job_id>')
-def get_job_detail(job_id):
+def get_job(job_id):
     job = Job.query.get(job_id)
     if job:
         return jsonify(
@@ -68,8 +86,29 @@ def get_job_detail(job_id):
     ), 404
 
 
+@app.route('/job/<string:job_id>/skills')
+def get_skills_by_job(job_id):
+    skills = JobSkill.query.filter_by(job_id=job_id).all()
+    if len(skills):
+        return jsonify(
+            {
+                "code": 200,
+                "data": [skill.to_dict() for skill in skills]
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "data": {
+                "job_id": job_id
+            },
+            "message": "Skills not found."
+        }
+    ), 404
+
+
 @app.route('/job/<string:skill_name>/jobs')
-def find_by_skill_name(skill_name):
+def get_jobs_by_skill(skill_name):
     jobs = JobSkill.query.filter_by(skill_name=skill_name).all()
     # return [module.to_dict() for module in modules]
     if len(jobs):
@@ -86,25 +125,6 @@ def find_by_skill_name(skill_name):
                 "skill_name": skill_name
             },
             "message": "Jobs not found."
-        }
-    ), 404
-
-
-# REST API
-@app.route('/jobs')
-def get_all_jobs():
-    jobs = Job.query.all()
-    if len(jobs):
-        return jsonify(
-            {
-                "code": 200,
-                "data": [job.to_dict() for job in jobs]
-            }
-        )
-    return jsonify(
-        {
-            "code": 404,
-            "message": "No jobs found."
         }
     ), 404
 
