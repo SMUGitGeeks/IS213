@@ -19,6 +19,7 @@ class Course(db.Model):
 
         }
 
+
 # Define the CourseSkill model and its fields
 # CourseSkill is in a relationship with Course
 class CourseSkill(db.Model):

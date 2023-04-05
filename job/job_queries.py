@@ -18,6 +18,7 @@ def resolve_job(obj, info, job_id):
         }
     return payload
 
+
 # get all jobs (get jobs base on skills)
 def resolve_jobs(obj, info, skill_name=None):
     try:
@@ -41,6 +42,7 @@ def resolve_jobs(obj, info, skill_name=None):
         }
     return payload
 
+
 # create job
 def resolve_create_job(obj, info, job_role, job_description, job_company):
     try:
@@ -62,6 +64,7 @@ def resolve_create_job(obj, info, job_role, job_description, job_company):
         }
     return payload
 
+
 # update job
 def resolve_update_job(obj, info, job_id, job_role, job_description, job_company):
     try:
@@ -82,10 +85,11 @@ def resolve_update_job(obj, info, job_id, job_role, job_description, job_company
         }
     return payload
 
+
 # delete job
 def resolve_delete_job(obj, info, job_id):
     try:
-        job_skills = JobSkill.query.filter_by(job_id = job_id)
+        job_skills = JobSkill.query.filter_by(job_id=job_id)
         for job_skill in job_skills:
             db.session.delete(job_skill)
         job = Job.query.get(job_id)
@@ -100,12 +104,13 @@ def resolve_delete_job(obj, info, job_id):
         }
     return payload
 
+
 # get all job skills (get job skills base on job id)
 def resolve_job_skills(obj, info, job_id=None):
     try:
         job_skills = JobSkill.query.all()
         if job_id:
-            job_skills = [job_skill.to_dict() for job_skill in JobSkill.query.filter_by(job_id = job_id)]
+            job_skills = [job_skill.to_dict() for job_skill in JobSkill.query.filter_by(job_id=job_id)]
         payload = {
             "success": True,
             "job_skills": job_skills
@@ -117,10 +122,11 @@ def resolve_job_skills(obj, info, job_id=None):
         }
     return payload
 
+
 # get job skill by job_id and skill_name (Quite useless)
 def resolve_job_skill(obj, info, job_id, old_skill, new_skill):
     try:
-        #update old skill to new skill
+        # update old skill to new skill
         job_skill = JobSkill.query.filter_by(job_id=job_id, skill_name=old_skill).first()
         if job_skill and new_skill:
             job_skill.skill_name = new_skill
@@ -134,6 +140,7 @@ def resolve_job_skill(obj, info, job_id, old_skill, new_skill):
             "errors": [str(error)]
         }
     return payload
+
 
 # create job skill
 def resolve_create_job_skill(obj, info, job_id, skill_name):
@@ -154,6 +161,7 @@ def resolve_create_job_skill(obj, info, job_id, skill_name):
         }
     return payload
 
+
 # update job skill
 def resolve_update_job_skill(obj, info, job_id, skill_name):
     try:
@@ -172,6 +180,7 @@ def resolve_update_job_skill(obj, info, job_id, skill_name):
             "errors": [str(error)]
         }
     return payload
+
 
 # delete job skill
 def resolve_delete_job_skill(obj, info, job_id, skill_name):
