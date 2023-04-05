@@ -4,7 +4,7 @@ import sys
 from os import environ
 
 import requests
-from flask import Flask
+from flask import Flask, jsonify
 from flask_cors import CORS
 import amqp_setup
 import pika
@@ -185,7 +185,7 @@ def get_suitability(student_id, job_id):
         amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"{microservice}.error", 
             body=message, properties=pika.BasicProperties(delivery_mode = 2))
         
-        return json({
+        return jsonify({
             "code": 500,
             "message": "apply_job.py internal error: " + ex_str
         }), 500
