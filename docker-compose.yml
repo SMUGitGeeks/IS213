@@ -155,19 +155,19 @@ services:
       - "5007:5007"
 
 
-  ###############################################
+  ##############################################
   # Email: The Email microservice
-  ###############################################
-  # email:
-  #   build:
-  #     context: ./
-  #     dockerfile: ./email.Dockerfile
-  #   image: email:1.0
-  #   restart: always
-  #   depends_on:
-  #     - rabbitmq
-  #   environment:
-  #     rabbit_host: rabbitmq
-  #     rabbit_port: 5672
-  #     PYTHONUNBUFFERED: 1
+  ##############################################
+  email:
+    build:
+      context: ./
+      dockerfile: ./email.Dockerfile
+    image: email:1.0
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
 
