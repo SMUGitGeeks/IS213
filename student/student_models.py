@@ -16,10 +16,10 @@ class Student(db.Model):
 
     def to_dict(self):
         return {
-            "student_id": self.student_id, 
-            "student_name": self.student_name, 
-            "email": self.email, 
-            "is_graduated": self.is_graduated, 
+            "student_id": self.student_id,
+            "student_name": self.student_name,
+            "email": self.email,
+            "is_graduated": self.is_graduated,
             "is_subscribed": self.is_subscribed}
 
 

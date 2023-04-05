@@ -19,12 +19,14 @@ def resolve_course(obj, info, course_id):
         }
     return payload
 
+
 # get all courses
 def resolve_courses(obj, info, skill_name=None):
     try:
         if skill_name:
             # get courses from Course table based on skill_name from CourseSkill table
-            courses = [course.to_dict() for course in Course.query.join(CourseSkill).filter(CourseSkill.skill_name == skill_name).all()]
+            courses = [course.to_dict() for course in
+                       Course.query.join(CourseSkill).filter(CourseSkill.skill_name == skill_name).all()]
             payload = {
                 "success": True,
                 "courses": courses
@@ -41,6 +43,7 @@ def resolve_courses(obj, info, skill_name=None):
             "errors": [str(error)]
         }
     return payload
+
 
 # create a course
 def resolve_create_course(obj, info, course_id, course_name, course_link):
@@ -61,13 +64,14 @@ def resolve_create_course(obj, info, course_id, course_name, course_link):
         }
     return payload
 
+
 # update a course
-def resolve_update_course(obj, info, course_id, course_name = None, course_link = None):
+def resolve_update_course(obj, info, course_id, course_name=None, course_link=None):
     try:
         course = Course.query.get(course_id)
-        if course_name: 
+        if course_name:
             course.course_name = course_name
-        if course_link:    
+        if course_link:
             course.course_link = course_link
         db.session.commit()
         payload = {
@@ -80,6 +84,7 @@ def resolve_update_course(obj, info, course_id, course_name = None, course_link 
             "errors": [str(error)]
         }
     return payload
+
 
 # delete a course
 def resolve_delete_course(obj, info, course_id):
@@ -100,7 +105,6 @@ def resolve_delete_course(obj, info, course_id):
     return payload
 
 
-
 ########################################## CourseSkill ##########################################
 
 # get all course skills
@@ -108,7 +112,8 @@ def resolve_course_skills(obj, info, course_id=None):
     try:
         # get all course skills based on courseid
         if course_id:
-            course_skills = [course_skill.to_dict() for course_skill in CourseSkill.query.filter_by(course_id=course_id).all()]
+            course_skills = [course_skill.to_dict() for course_skill in
+                             CourseSkill.query.filter_by(course_id=course_id).all()]
             payload = {
                 "success": True,
                 "course_skills": course_skills
@@ -146,6 +151,7 @@ def resolve_create_course_skill(obj, info, course_id, skill_name):
         }
     return payload
 
+
 # update a course skill
 def resolve_update_course_skill(obj, info, course_id, new_skill, old_skill):
     # payload = {"success": False, "errors": [str(error)]}
@@ -163,6 +169,7 @@ def resolve_update_course_skill(obj, info, course_id, new_skill, old_skill):
             "errors": [str(error)]
         }
     return payload
+
 
 # delete a course skill
 def resolve_delete_course_skill(obj, info, course_id, skill_name):

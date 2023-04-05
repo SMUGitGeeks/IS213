@@ -1,21 +1,28 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-import os, sys
+import os
 from os import environ
 
-from invokes import invoke_http
 import requests
+from flask import Flask
+from flask_cors import CORS
 import amqp_setup
 import pika
 import json
 
+from invokes import invoke_http
+
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
+student_URL = environ.get('studentURL')
+job_URL = environ.get('jobURL')
+module_URL = environ.get('moduleURL')
+course_URL = environ.get('courseURL')
+error_URL = environ.get('errorURL')
 student_URL = environ.get('student_URL') or "http://localhost:5001/"
 job_URL = environ.get('job_URL') or "http://localhost:5002/"
 module_URL = environ.get('module_URL') or "http://localhost:5000/"
 course_URL = environ.get('course_URL') or "http://localhost:5003/"
+
 
 @app.route('/apply/<string:student_id>/<string:job_id>', methods=['GET'])
 def get_suitability(student_id, job_id):
@@ -208,8 +215,8 @@ def post_resume(student_id, job_id, resume):
             file = resume
             url = "https://content.dropboxapi.com/2/files/upload"
 
-            payload = file
-            path = "/" + student_id + "_" + job_id
+    payload = file
+    path = "/" + student_id + "_" + job_id
 
             headers = {
             'Authorization': 'Bearer sl.Bb-oDML-7CjIRkPNO7UEXnHqfrQs4oYNQAmnDM73F3arwDMaXcOWNmFT138tw_5RtEqugcpC6OPuH7uJbh7WcbbxzXEsMb10AspaOG2kO7QAPjDk1a-OxTmv41C1Yw5_J0tHsGI',
@@ -217,7 +224,7 @@ def post_resume(student_id, job_id, resume):
             'Content-Type': 'application/octet-stream'
             }
 
-            response = requests.request("POST", url, headers=headers, data=payload)
+    response = requests.request("POST", url, headers=headers, data=payload)
 
             return(response.text)
         

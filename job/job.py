@@ -1,37 +1,19 @@
+from os import environ
+
 from ariadne import load_schema_from_path, make_executable_schema, graphql_sync, snake_case_fallback_resolvers, \
     ObjectType
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from os import environ
-from sqlalchemy import create_engine
 
-from job_models import db
 from job_queries import *
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/job'
-# db_urls = [
-#     'mysql+mysqlconnector://root:root@localhost:3306/job',
-#     'mysql+mysqlconnector://root@localhost:3306/job',
-#     environ.get('dbURL')
-# ]
-
-# for url in db_urls:
-#     try:
-#         engine = create_engine(url)
-#         engine.connect()
-#         app.config['SQLALCHEMY_DATABASE_URI'] = url
-#         break
-#     except:
-#         print('db coonection fail')
-#         continue
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.app_context().push()
 db.init_app(app)
 db.create_all()
 CORS(app, , resources={r"/*": {"origins": "*"}})
-
 
 # We need to assign the resolvers to the corresponding fields in the Query and Mutation types
 query = ObjectType("Query")
@@ -62,7 +44,8 @@ def graphql_server():
     )
     status_code = 200
     # this part does not work
-    return jsonify({"result": result, "code":status_code})
+    return jsonify({"result": result, "code": status_code})
+
 
 @app.route('/job/<string:job_id>')
 def get_job_detail(job_id):
@@ -83,6 +66,7 @@ def get_job_detail(job_id):
             "message": "Job not found."
         }
     ), 404
+
 
 @app.route('/job/<string:skill_name>/jobs')
 def find_by_skill_name(skill_name):
@@ -105,6 +89,7 @@ def find_by_skill_name(skill_name):
         }
     ), 404
 
+
 # REST API
 @app.route('/jobs')
 def get_all_jobs():
@@ -122,6 +107,7 @@ def get_all_jobs():
             "message": "No jobs found."
         }
     ), 404
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5002, debug=True)
