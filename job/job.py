@@ -128,6 +128,53 @@ def get_jobs_by_skill(skill_name):
         }
     ), 404
 
+@app.route('/job', methods=['POST'])
+def create_job():
+    job = Job(
+        job_role=request.json['job_role'],
+        job_description=request.json['job_description'],
+        job_company=request.json['job_company'],
+    )
+    db.session.add(job)
+    db.session.commit()
+    if job:
+        return jsonify(
+            {
+                "code": 201,
+                "data": job.to_dict()
+            }
+        )
+    return jsonify(
+        {
+            "code": 400,
+            "data": {},
+            "message": "Job not created."
+        }
+    ), 400
+
+@app.route('/job/<string:job_id>', methods=['POST'])
+def create_job_skill(job_id):
+    job_skill = JobSkill(
+        job_id=job_id,
+        skill_name=request.json['skill_name'],
+    )
+    db.session.add(job_skill)
+    db.session.commit()
+    if job_skill:
+        return jsonify(
+            {
+                "code": 201,
+                "data": job_skill.to_dict()
+            }
+        )
+    return jsonify(
+        {
+            "code": 400,
+            "data": {},
+            "message": "Job Skill not created."
+        }
+    ), 400
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5002, debug=True)
