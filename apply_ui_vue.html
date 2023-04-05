@@ -140,7 +140,7 @@
             methods: {
                 checkProceed () {
                     console.log('test')
-                    if (this.courses === [] && this.lack_skills === [] && this.modules === []) {
+                    if (this.courses === [] && (this.lack_skills === [] || this.lack_skills === ['']) && this.modules === []) {
                         this.hasproceed = true
                     }
                     console.log('proceed: '+ this.hasproceed)
