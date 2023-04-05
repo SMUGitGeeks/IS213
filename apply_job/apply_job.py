@@ -42,14 +42,14 @@ def get_suitability(student_id, job_id):
     print('\n-----Invoking module microservice-----')
     skills_data = []
     for module_id in student_modules_list:
-        module_query = "query { get_module_skills (module_id: \"" + module_id + "\") { module_skills { skill_name } success errors } }"
+        module_query = "query { get_module_skill (module_id: \"" + module_id + "\") { module_skills { skill_name } success errors } }"
         data = {
             'query': module_query
         }
         module_skills_data = invoke_http(module_URL + 'graphql', method='POST', json=data)
-        if not module_skills_data['data']['get_module_skills']['success']:
+        if not module_skills_data['data']['get_module_skill']['success']:
             return invoke_error_microservice(module_skills_data, "module")
-        module_skills = module_skills_data['data']['get_module_skills']['module_skills']
+        module_skills = module_skills_data['data']['get_module_skill']['module_skills']
 
         # Create list of module skills
         for skill in module_skills:
