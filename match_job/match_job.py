@@ -13,6 +13,44 @@ student_URL = environ.get('student_URL') or "http://localhost:5001/" or input("E
 job_URL = environ.get('job_URL') or "http://localhost:5002/" or input("Enter job service URL: ")
 module_URL = environ.get('module_URL') or "http://localhost:5000/" or input("Enter module service URL: ")
 
+@app.route('/<string:student_id>')
+def check_student(student_id):
+    try:
+        if student_id:
+            print('\n-----Invoking student microservice-----')
+            # Verify valid student_id ===============================
+            if not student_id.isnumeric():
+                return {
+                    'code': 400,
+                    'message': 'Invalid Student ID.'
+                }
+            student_query = "query { get_student (student_id:" + student_id + ") { student { student_id } success errors } }"
+            data = {
+                'query': student_query
+            }
+            student_data = invoke_http(student_URL + 'graphql', method='POST', json=data)
+
+            if not student_data['data']['get_student']['success']:
+                return invoke_error_microservice(student_data, "student")
+            print('student_id: ' + student_id)
+        
+        return jsonify({
+                "code": 200,
+                "data": student_data
+            }), 200
+    
+    except Exception as e:
+        # Unexpected error in code
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
+        print(ex_str)
+
+        return jsonify({
+            "code": 500,
+            "message": "Failed to invoke Student microservice"
+        }), 500
+
 @app.route('/match/<string:student_id>')
 def get_job(student_id):
     if student_id:
@@ -41,22 +79,6 @@ def get_job(student_id):
 def match(student_id):
     try:
         print('\n-----Invoking student microservice-----')
-        # Verify valid student_id ===============================
-        if not student_id.isnumeric():
-            return {
-                'code': 400,
-                'message': 'Invalid Student ID.'
-            }
-        student_query = "query { get_student (student_id:" + student_id + ") { student { student_id } success errors } }"
-        data = {
-            'query': student_query
-        }
-        student_data = invoke_http(student_URL + 'graphql', method='POST', json=data)
-
-        if not student_data['data']['get_student']['success']:
-            return invoke_error_microservice(student_data, "student")
-        print('student_id: ' + student_id)
-
         # Get Student Modules ==================================
         # ++++ USING GRAPHQL +++++
         student_modules_query = "query { get_student_modules (student_id: " + student_id + ") { student_modules { module_id } success errors } }"

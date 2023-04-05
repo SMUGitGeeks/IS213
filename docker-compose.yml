@@ -14,6 +14,8 @@ services:
     environment:
       dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/student
       PYTHONUNBUFFERED: 1
+    ports:
+      - "5001:5001"
 
   ###################################
   # job: The Job microservice
@@ -46,23 +48,23 @@ services:
   ###############################################
   # Match job: The Match job microservice
   ###############################################
-  # match_job:
-  #   build:
-  #     context: ./
-  #     dockerfile: ./match_job.Dockerfile
-  #   image: match_job:1.0
-  #   restart: always
-  #   depends_on:
-  #     - student
-  #     - module
-  #     - job
-  #   environment:
-  #     student_URL: http://student:5001/
-  #     module_URL: http://module:5000/
-  #     job_URL: http://job:5002/
-  #     PYTHONUNBUFFERED: 1
-  #   ports:
-  #     - "5005:5005"
+  match_job:
+    build:
+      context: ./
+      dockerfile: ./match_job.Dockerfile
+    image: match_job:1.0
+    restart: always
+    depends_on:
+      - student
+      - module
+      - job
+    environment:
+      student_URL: http://student:5001/
+      module_URL: http://module:5000/
+      job_URL: http://job:5002/
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5005:5005"
 
   ###################################
   # Course: The Course microservice
@@ -76,6 +78,8 @@ services:
     environment:
       dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/course
       PYTHONUNBUFFERED: 1
+    ports:
+      - "5003:5003"
 
   ###############################################
   # Apply Job: The Apply Job microservice
