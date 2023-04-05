@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+ 
+  ###################################
+  # student: The Student microservice
+  ###################################
+  student:
+    build:
+      context: ./
+      dockerfile: ./student.Dockerfile
+    image: student:1.0
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/student
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5001:5001"

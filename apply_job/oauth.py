@@ -19,6 +19,8 @@ print(authorization_url)
 
 # get the authorization code from the user:
 authorization_code = '<placeholder>'
+# authorization_code = 'GBTvNZzMglYAAAAAAAAADbfRe0aAgawHcjhiNp6hW9c'
+
 
 # exchange the authorization code for an access token:
 token_url = "https://api.dropboxapi.com/oauth2/token"

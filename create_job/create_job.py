@@ -7,6 +7,7 @@ import pika
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
+import amqp_setup  # IMPORTANT -> Add this later
 from invokes import invoke_http
 from new_jobs_storage import NewJobs
 
@@ -16,8 +17,6 @@ CORS(app)
 student_URL = environ.get('studentURL')
 job_URL = environ.get('jobURL')
 email_URL = environ.get('emailURL')
-error_URL = environ.get('errorURL')
-
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 1. Create Job Microservice Steps
@@ -33,6 +32,7 @@ error_URL = environ.get('errorURL')
 # ====================== Get Jobs from UI ======================
 @app.route("/create_job", methods=['POST'])
 def create_job():
+    amqp_setup.check_setup()
     if request.is_json:
         try:
             newjob_record = request.get_json()
@@ -59,18 +59,27 @@ def create_job():
             # return jsonify(result), result["code"]
 
         except Exception as e:
-
             # Unexpected error in code
+            print(f"\n\n-----Invoking error microservice as create_job fails.-----")
+            print("-----Publishing the error message with routing_key= create_job.error-----")
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
             print(ex_str)
+            
+            code = 500
+            message = json.dumps({
+            "code": code,
+            "message": "create_job.py internal error: " + ex_str
+            })
+
+            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="create_job.error", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2))
 
             return jsonify({
                 "code": 500,
                 "message": "create_job.py internal error: " + ex_str
             }), 500
-
 
     # if reached here, not a JSON request.
     else:
@@ -79,12 +88,11 @@ def create_job():
             "message": "Invalid JSON input: " + str(request.get_data())
         }), 400
 
-
 def add_job(record):
     # -> send new job to job microservice 
     # -> receive status 
-
-    print('\n############## Invoking job microservice ##############')
+    amqp_setup.check_setup()
+    print('\n------------ Invoking job microservice ------------')
 
     # ====================== add new job record ======================
 
@@ -108,34 +116,30 @@ def add_job(record):
     try: 
         job_data = invoke_http(job_URL + 'graphql', headers = headers, method='POST', json=data)
         print(job_data)
-
-        # ADD ERROR CODE HERE
-        if job_data['code'] in range(200, 300):
-            if job_data['result']['data']['create_job']['errors']:
-
-                print('\n')
-                print(f"Failed to add job")
-                print('\n')
-
-                result = invoke_error_microservice(job_data, "job")
-
-                return result
-
-            else:
-                print(f"job successfully added")
-                job_id = job_data['result']['data']['create_job']['job']['job_id']
-                print(job_id)
-
+        print(f"job successfully added")
+        job_id = job_data['result']['data']['create_job']['job']['job_id']
+        print(job_id)
+                    
     except Exception as e:
+        print(f"\n\n-----Invoking error microservice as create_job fails.-----")
+        print(f"-----Publishing the error message with routing_key=create_job.error-----")
         # Unexpected error in code
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
         print(ex_str)
+        code = 500
+        message = json.dumps({
+            "code": code,
+            "message": "create_job.py internal error: " + ex_str
+        })
 
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"create_job.error", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2))
+        
         return jsonify({
             "code": 500,
-            "message": "Failed to invoke job microservice"
+            "message": "create_job.py internal error: " + ex_str
         }), 500
 
     # ====================== Add new job skill ======================
@@ -156,32 +160,28 @@ def add_job(record):
 
         try:
             jobskill_data = invoke_http(job_URL + 'graphql', method='POST', json=data)
-
             print(jobskill_data)
 
-            if jobskill_data['code'] in range(200, 300):
-                if jobskill_data['result']['data']['create_job_skill']['errors']:
-
-                    print(f"Failed to add job skill {jobskill}")
-                    print('\n')
-
-                    result = invoke_error_microservice(jobskill_data, "jobskill")
-
-                    return result
-
-                else:
-                    print(f"job skill {jobskill} successfully added")
-
         except Exception as e:
+            print(f"\n\n-----Invoking error microservice as create job_skill fails.-----")
+            print(f"-----Publishing the error message with routing_key=job_skill.error-----")
             # Unexpected error in code
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
             print(ex_str)
+            code = 500
+            message = json.dumps({
+                "code": code,
+                "message": "create_job.py internal error: " + ex_str
+            })
 
+            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"job_skill.error", 
+                body=message, properties=pika.BasicProperties(delivery_mode = 2))
+            
             return jsonify({
                 "code": 500,
-                "message": "Failed to add job record"
+                "message": "create_job.py internal error: " + ex_str
             }), 500
 
     print("\n")
@@ -192,34 +192,17 @@ def add_job(record):
     new_jobs._job_dict[job_id] = {"job role": job_role, "job description": job_description, "job company": job_company}
 
     print("\n")
-    print("####################################")
+    print("------------------------------")
     print('Getting data from new_jobs_storage')
 
     job_dict = new_jobs.job_dict
     print(job_dict)
-    print("####################################")
-
+    print("------------------------------")
     return jsonify({
         "code": 200,
         "message": "Job added"
     }), 200
     # =================================================================
-
-
-def invoke_error_microservice(json, microservice):
-    print(f'\n\n############## Invoking error microservice as {microservice} fails ##############')
-    #### invoke_http(error_URL, method="POST", json=json)
-    # - reply from the invocation is not used; 
-    # continue even if this invocation fails
-    # can change to amqp
-    print("Sent to the error microservice:", json)
-
-    # 7. Return error
-    return jsonify({
-        "code": 500,
-        "message": f"{microservice} failed, sent for error handling."
-    }), 500
-
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 2. Send Data to Email Microservice Steps
@@ -232,7 +215,8 @@ def invoke_error_microservice(json, microservice):
 
 @app.route("/send_email", methods=['POST'])
 def send_to_email():
-    print('\n############## Invoking student microservice ##############')
+    amqp_setup.check_setup()
+    print('\n------------ Invoking student microservice ------------')
     # ====================== Get list of emails ======================
     email_query = """
     query {
@@ -254,9 +238,9 @@ def send_to_email():
 
     sub_emails = invoke_http(student_URL + 'graphql', method='POST', json=data)
 
-    print('##################################')
+    print('------------------------######')
     print(sub_emails)
-    print('##################################')
+    print('------------------------######')
 
     students = sub_emails['data']['get_students']['students']
 

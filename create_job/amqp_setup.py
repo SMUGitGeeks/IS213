@@ -3,7 +3,7 @@ import pika
 # These module-level variables are initialized whenever a new instance of python interpreter imports the module;
 # In each instance of python interpreter (i.e., a program run), the same module is only imported once (guaranteed by the interpreter).
 
-hostname = "localhost"  # default hostname
+hostname = "rabbitmq"  # default hostname
 port = 5672  # default port
 # connect to the broker and set up a communication channel in the connection
 connection = pika.BlockingConnection(
@@ -21,7 +21,7 @@ connection = pika.BlockingConnection(
 channel = connection.channel()
 # Set up the exchange if the exchange doesn't exist
 # - use a 'topic' exchange to enable interaction
-exchangename = "email_topic"
+exchangename = "boss_finder"
 exchangetype = "topic"
 channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, durable=True)
 # 'durable' makes the exchange survive broker restarts
@@ -38,8 +38,8 @@ channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.notif
 # bind the queue to the exchange via the key
 # any routing_key with two words and ending with '.error' will be matched
 
-############   Activity_Log queue    #############
-# delcare Error queue
+############   Error queue    #############
+#delcare Error queue
 queue_name = 'Error'
 channel.queue_declare(queue=queue_name, durable=True)
 # 'durable' makes the queue survive broker restarts
