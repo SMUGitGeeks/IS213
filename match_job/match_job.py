@@ -34,9 +34,6 @@ def check_student(student_id):
                 'query': student_query
             }
             student_data = invoke_http(student_URL + 'graphql', method='POST', json=data)
-
-            if not student_data['data']['get_student']['success']:
-                return invoke_error_microservice(student_data, "student")
             print('student_id: ' + student_id)
 
         return jsonify({
