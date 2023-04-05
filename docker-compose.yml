@@ -1,0 +1,105 @@
+version: "3.8"
+
+services:
+ 
+  ###################################
+  # student: The Student microservice
+  ###################################
+  student:
+    build:
+      context: ./
+      dockerfile: ./student.Dockerfile
+    image: student:1.0
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/student
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5001:5001"
+
+  ###################################
+  # job: The Job microservice
+  ###################################
+  job:
+    build:
+      context: ./
+      dockerfile: ./job.Dockerfile
+    image: job:1.0
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/job
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5002:5002"
+
+  ###################################
+  # module: The module microservice
+  ###################################
+  module:
+    build:
+      context: ./
+      dockerfile: ./module.Dockerfile
+    image: module:1.0
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/module
+      PYTHONUNBUFFERED: 1
+
+  ###############################################
+  # Match job: The Match job microservice
+  ###############################################
+  match_job:
+    build:
+      context: ./
+      dockerfile: ./match_job.Dockerfile
+    image: match_job:1.0
+    restart: always
+    depends_on:
+      - student
+      - module
+      - job
+    environment:
+      student_URL: http://student:5001/
+      module_URL: http://module:5000/
+      job_URL: http://job:5002/
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5005:5005"
+
+  ###################################
+  # Course: The Course microservice
+  ###################################
+  course:
+    build:
+      context: ./
+      dockerfile: ./course.Dockerfile
+    image: course:1.0
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/course
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5003:5003"
+
+  ###############################################
+  # Apply Job: The Apply Job microservice
+  ###############################################
+  apply_job:
+    build:
+      context: ./
+      dockerfile: ./apply_job.Dockerfile
+    image: apply_job:esd
+    restart: always
+    depends_on:
+      - student
+      - job
+      - module
+      - course
+    environment:
+      student_URL: http://student:5001/
+      module_URL: http://module:5000/
+      job_URL: http://job:5002/
+      course_URL: http://course:5003/
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5006:5006"

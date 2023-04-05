@@ -10,7 +10,7 @@ import pika
 import json
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 student_URL = environ.get('student_URL') or "http://localhost:5001/"
 job_URL = environ.get('job_URL') or "http://localhost:5002/"

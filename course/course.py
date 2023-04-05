@@ -11,20 +11,21 @@ from course_queries import resolve_course, resolve_courses, resolve_course_skill
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-db_urls = [
-    'mysql+mysqlconnector://root:root@localhost:3306/course',
-    'mysql+mysqlconnector://root@localhost:3306/course'
-]
+# db_urls = [
+#     'mysql+mysqlconnector://root:root@localhost:3306/course',
+#     'mysql+mysqlconnector://root@localhost:3306/course',
+#     environ.get('dbURL')
+# ]
 
-for url in db_urls:
-    try:
-        engine = create_engine(url)
-        engine.connect()
-        app.config['SQLALCHEMY_DATABASE_URI'] = url
-        break
-    except:
-        print('db coonection fail')
-        continue
+# for url in db_urls:
+#     try:
+#         engine = create_engine(url)
+#         engine.connect()
+#         app.config['SQLALCHEMY_DATABASE_URI'] = url
+#         break
+#     except:
+#         print('db coonection fail')
+#         continue
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.app_context().push()
 db.init_app(app)
@@ -63,4 +64,4 @@ def graphql_server():
     return jsonify(result), status_code
 
 if __name__ == '__main__':
-    app.run(port=5003, debug=True)
+    app.run(host="0.0.0.0", port=5003, debug=True)
