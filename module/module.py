@@ -12,20 +12,21 @@ from module_queries import resolve_module, resolve_modules, resolve_module_skill
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
-db_urls = [
-    'mysql+mysqlconnector://root:root@localhost:3306/module',
-    'mysql+mysqlconnector://root@localhost:3306/module'
-]
+# db_urls = [
+#     'mysql+mysqlconnector://root:root@localhost:3306/module',
+#     'mysql+mysqlconnector://root@localhost:3306/module',
+#     environ.get('dbURL')
+# ]
 
-for url in db_urls:
-    try:
-        engine = create_engine(url)
-        engine.connect()
-        app.config['SQLALCHEMY_DATABASE_URI'] = url
-        break
-    except:
-        print('db coonection fail')
-        continue
+# for url in db_urls:
+#     try:
+#         engine = create_engine(url)
+#         engine.connect()
+#         app.config['SQLALCHEMY_DATABASE_URI'] = url
+#         break
+#     except:
+#         print('db coonection fail')
+#         continue
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.app_context().push()

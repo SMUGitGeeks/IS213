@@ -16,21 +16,21 @@ module_URL = environ.get('module_URL') or "http://localhost:5000/" or input("Ent
 @app.route('/match/<string:student_id>')
 def get_job(student_id):
     if student_id:
-        try:
-            result = match(student_id)
-            # return jsonify(result), result["code"]
-            return result
-        except Exception as e:
-            # Unexpected error in code
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
-            print(ex_str)
+        # try:
+        result = match(student_id)
+        # return jsonify(result), result["code"]
+        return result
+        # except Exception as e:
+        #     # Unexpected error in code
+        #     exc_type, exc_obj, exc_tb = sys.exc_info()
+        #     fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        #     ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
+        #     print(ex_str)
 
-            return jsonify({
-                "code": 500,
-                "message": "internal error: " + ex_str
-            }), 500
+        #     return jsonify({
+        #         "code": 500,
+        #         "message": "internal error: " + ex_str
+        #     }), 500
         
     return jsonify({
         "code": 400,

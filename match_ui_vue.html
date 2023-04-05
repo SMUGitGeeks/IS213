@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Title</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css'
+        rel='stylesheet'>
+
+    <!-- Vue 3 -->
+    <script src='https://cdn.jsdelivr.net/npm/vue@3.0.2/dist/vue.global.js'></script>
+    <!-- Vue 3: production version, optimized for size and speed -->
+    <!-- <script src='https://cdn.jsdelivr.net/npm/vue@3.0.2/dist/vue.global.prod.js'></script> -->
+
+</head>
+
+<body>
+    <!-- <p>test</p> -->
+    <div id="app" class="container my-3">
+        <h1>BOSS Finder</h1>
+
+        <div class="row">
+            <div class="col align-middle">
+                Input Student ID: <input v-model="student_id" placeholder="Insert StudentID">
+                <button @click="matchJobs()" type="button" class="ms-3 btn btn-sm btn-primary" v-show="!isSearching">
+                    Search
+                </button>
+                <button type="button" class="ms-3 btn btn-sm btn-primary" disabled v-show="isSearching">
+                    Searching
+                </button><br>
+            </div>
+        </div>
+
+        <div class="row" v-if="!hasSearched && !isSearching && !hasError">
+            <div class="row mt-3">
+                <job-component
+                :role="job['job_role']"
+                :company="job['job_company']"
+                :description="job['job_description']"
+                :link="temp_link"
+                v-for="job in jobs"
+                >
+                </job-component>
+            </div>
+        </div>
+
+        <div class="row mt-3" v-else-if="isSearching && !hasError">
+            <div class="card w-100 p-2 my-2" aria-hidden="true">
+                <div class="card-body">
+                    <h5 class="card-title placeholder-glow">
+                    <span class="placeholder col-6"></span>
+                    </h5>
+                    <p class="card-text placeholder-glow">
+                    <span class="placeholder col-7"></span>
+                    <span class="placeholder col-4"></span>
+                    <span class="placeholder col-4"></span>
+                    </p>
+                    <a class="btn btn-primary disabled placeholder col-6"></a>
+                </div>
+            </div>
+            <div class="card w-100 p-2 my-2" aria-hidden="true">
+                <div class="card-body">
+                    <h5 class="card-title placeholder-glow">
+                    <span class="placeholder col-6"></span>
+                    </h5>
+                    <p class="card-text placeholder-glow">
+                    <span class="placeholder col-7"></span>
+                    <span class="placeholder col-4"></span>
+                    <span class="placeholder col-4"></span>
+                    </p>
+                    <a class="btn btn-primary disabled placeholder col-6"></a>
+                </div>
+            </div>
+            <div class="card w-100 p-2 my-2" aria-hidden="true">
+                <div class="card-body">
+                    <h5 class="card-title placeholder-glow">
+                    <span class="placeholder col-6"></span>
+                    </h5>
+                    <p class="card-text placeholder-glow">
+                    <span class="placeholder col-7"></span>
+                    <span class="placeholder col-4"></span>
+                    <span class="placeholder col-4"></span>
+                    </p>
+                    <a class="btn btn-primary disabled placeholder col-6"></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row w-50 my-5 mx-auto border border-secondary-subtle p-3" v-else-if="hasError">
+            <h4 class="text-danger fw-bold">Error:</h4>
+            <p class="text-center col">{{ message }}</p>
+        </div>
+
+        <div class="row" v-else>
+            <h4 class="mt-3">Search Results</h4>
+
+            <div class="row mt-1">
+                <job-component
+                :role="job['job_role']"
+                :company="job['job_company']"
+                :description="job['job_description']"
+                :link="temp_link"
+                :id="job['job_id']"
+                v-for="job in matched_jobs"
+                >
+                </job-component>
+            </div>
+
+            <!-- <div class="form-popup" id="myForm">
+                <form action="" class="form-container">
+
+                  <div class="row" v-show="!suitability">
+
+                    <table>
+                        <th>You are missing some skills. The skills are:</th>
+                        <tr v-for="skill in lack_skills">
+                            {{ skill }}
+                        </tr>
+                        <tr>Here are some courses you can take</tr>
+                        <tr v-for="course in courses">
+                            {{ course.course_name }} <br>
+                            {{ course.course_link }}
+                        </tr>
+
+                    </table>
+
+                    <p>Would you still like to proceed with the application?</p>
+                     basically on clicking then will pop up the input resume
+                        like idk on click then proceed=true my brain not braining
+                    <button type="button" class="btn btn-success">Yes</button>
+                    
+                    <button type="button" class="btn btn-danger" @click="closeForm()">No</button>
+
+                  </div>
+                  <div class="row">
+                    Student ID: <input v-model="student_id" placeholder="Insert StudentID">                  
+                  <input type="file" id="resume" name="resume" v-show="suitability or proceed">
+                  </div>
+                    
+                  <div class="row">
+                    <button type="submit" class="btn" @click="sendResume(resume)">Submit</button>
+                  </div>
+                  
+                  
+                </form>
+              </div>
+              <div>
+                <p v-if="uploadText !== ''" v-model="uploadText">
+                    {{ uploadText }}
+                </p>
+              </div> -->
+        </div>
+    </div>
+
+    <script>
+        const match_job_URL = "http://localhost:5005";
+        const job_URL = "http://localhost:5002";
+        const apply_job_URL = "http://localhost:5006"
+
+        const app = Vue.createApp({
+            computed: {
+                haveJobs () {
+                    return this.jobs.length > 0;
+                }
+            },
+            data() {
+                return {
+                    student_id: "",
+                    job_id: "",
+                    jobs: [],
+                    matched_jobs: [],
+                    jobs_data: [],
+                    courses: [],
+                    modules: [],
+                    lack_skills: [],
+                    temp_link: 'https://google.com',
+                    hasSearched: false,
+                    isSearching: false,
+                    hasError: false,
+                    isSuitable: false,
+                    proceed: false,
+                    uploadText: false,
+                    message: "There is a problem retrieving data, please try again later."
+                };
+            },
+            methods: {
+                getAllJobs () {
+                    // on Vue instance created, load the book list
+                    const response =
+                        fetch(job_URL + '/jobs')
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(data);
+                                if (data.code !== 200) {
+                                    // no job in db
+                                    this.message = data.message;
+                                } else {
+                                    this.jobs = data.data;
+                                    console.log(this.jobs)
+                                }
+                            })
+                            .catch(error => {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                console.log(this.message + error);
+
+                            });
+
+                },
+                matchJobs () {
+                    console.log(this.student_id);
+                    this.isSearching = true
+                    this.hasError = false
+                        const response =
+                            fetch(`${match_job_URL}/match/${this.student_id}`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log(data);
+                                    if (data.code !== 200) {
+                                        // no book in db
+                                        this.message = data.message;
+                                        this.matched_jobs = [];
+                                        this.hasError = true
+                                    } else {
+                                        this.matched_jobs = data.data;
+                                        this.hasSearched = true;
+                                        console.log(data.data)
+                                        this.hasError = false
+                                    }
+                                    this.isSearching = false
+                                })
+                                .catch(error => {
+                                    // Errors when calling the service; such as network error, 
+                                    // service offline, etc
+                                    console.log(this.message + error);
+                                    this.hasError = true
+                                    this.isSearching = false
+                                });
+                },
+                applyJobs () {
+                    console.log(this.jobs)
+                //     console.log(this.job_id)
+                //     actual_job_id = this.job_id - 1
+                //     const response =
+                //             fetch(`${apply_job_URL}/apply/${this.student_id}/${actual_job_id}`)
+                //                 .then(response => response.json())
+                //                 .then(data => {
+                //                     console.log(data);
+                //                     if (data.code === 200) {
+                //                         this.isSuitable = data.message;
+                //                         this.jobs_data = data.data
+                //                     }
+
+                //                     if (this.suitability) {
+                //                         // is suitable
+                //                         this.proceed = true 
+                //                         openForm()
+                //                     }
+                //                     else {
+                //                         // is not suitable
+                //                         this.lack_skills = data.lack_skills
+                //                         this.courses = data.courses 
+                //                     }
+                //                 })
+                //                 .catch(error => {
+                //                     // Errors when calling the service; such as network error, 
+                //                     // service offline, etc
+                //                     console.log(this.message + error);
+                //                     this.hasError = true
+                //                 });
+                },
+                // openForm () {
+                //     document.getElementById("myForm").style.display = "block";
+                // }, 
+                // closeForm () {
+                //     document.getElementById("myForm").style.display = "none";
+                // },
+                sendResume (file, studentID, jobID) {
+                    studentID = this.student_id
+                    jobID = this.job_id
+                    // const response =
+                    //         fetch(`${apply_job_URL}/apply/${studentID}/${jobID}`)
+                    //             .then(response => response.json())
+                    //             .then(data => {
+                    //                 console.log(data);
+                    //                 uploadText = data
+                    //             })
+                    //             .catch(error => {
+                    //                 // Errors when calling the service; such as network error, 
+                    //                 // service offline, etc
+                    //                 console.log(this.message + error);
+                    //                 this.hasError = true
+                    //             })
+                }},
+            created () {
+                // on Vue instance created, load the book list
+                this.getAllJobs();
+            }
+        });
+
+        app.component('job-component', {
+            props: [ 'role', 'company', 'description', 'link', 'id' ],
+
+            template: `
+            <div class="card w-100 p-2 my-2">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-10">
+                            <h5 class="card-title">{{ role }}</h5>
+                            <h6 class="card-subtitle mb-2 text-body-secondary">{{ company }}</h6>
+                            <p class="card-text">{{ description }}</p>
+                            <a :href="link" class="card-link">Visit Company Page</a>
+                        </div>
+                        <div class="col">
+                            <button type="button" class="btn btn-sm btn-primary text-center" @click="applyJobs()">Apply</button>
+                            <p display="none">{{ id }}</p>
+                        </div>
+                        
+                    </div>
+                    
+                    
+                </div>
+            </div>
+            `
+        })
+
+        const vm = app.mount('#app');
+    </script>
+
+    <!-- Bootstrap Javascript -->
+    <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/js/bootstrap.bundle.min.js'></script>
+
+</body>
+
+</html>

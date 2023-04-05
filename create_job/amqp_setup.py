@@ -37,7 +37,7 @@ channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.notif
     # bind the queue to the exchange via the key
     # any routing_key with two words and ending with '.error' will be matched
 
-############   Activity_Log queue    #############
+############   Error queue    #############
 #delcare Error queue
 queue_name = 'Error'
 channel.queue_declare(queue=queue_name, durable=True)
