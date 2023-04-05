@@ -9,11 +9,11 @@ import requests
 app = Flask(__name__)
 CORS(app)
 
-student_URL = environ.get('student_URL') or "http://localhost:5001/"
-job_URL = environ.get('job_URL') or "http://localhost:5002/"
-module_URL = environ.get('module_URL') or "http://localhost:5000/"
-course_URL = environ.get('course_URL') or "http://localhost:5003/"
-error_URL = ""
+student_URL = environ.get('studentURL')
+job_URL = environ.get('jobURL')
+module_URL = environ.get('moduleURL')
+course_URL = environ.get('courseURL')
+error_URL = environ.get('errorURL')
 
 @app.route('/apply/<string:student_id>/<string:job_id>', methods=['GET'])
 def get_suitability(student_id, job_id):

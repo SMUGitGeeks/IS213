@@ -1,8 +1,9 @@
 from invokes import invoke_http
 import time
+from os import environ
 
 while True:
 
-    createjob_URL = "http://localhost:5100/"
-    invoke_http(createjob_URL + 'send_email', method='POST')
+    create_job_URL = environ.get('createJobURL')
+    invoke_http(create_job_URL + 'send_email', method='POST')
     time.sleep(30)

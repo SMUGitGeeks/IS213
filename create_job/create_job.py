@@ -3,6 +3,7 @@ from flask_cors import CORS
 import time
 
 import os, sys
+from os import environ
 
 import requests
 from invokes import invoke_http
@@ -17,10 +18,10 @@ app = Flask(__name__)
 CORS(app)
 
 
-student_URL = "http://localhost:5001/"
-job_URL = "http://localhost:5002/"
-email_URL = "http://localhost:5008/"
-#error_URL = "http://localhost:5004/"
+student_URL = environ.get('studentURL')
+job_URL = environ.get('jobURL')
+email_URL = environ.get('emailURL')
+error_URL = environ.get('errorURL')
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 1. Create Job Microservice Steps
