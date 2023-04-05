@@ -44,23 +44,23 @@ services:
   ###############################################
   # Match job: The Match job microservice
   ###############################################
-  match_job:
-    build:
-      context: ./
-      dockerfile: ./match_job.Dockerfile
-    image: match_job:1.0
-    restart: always
-    depends_on:
-      - student
-      - module
-      - job
-    environment:
-      student_URL: http://student:5001/
-      module_URL: http://module:5000/
-      job_URL: http://job:5002/
-      PYTHONUNBUFFERED: 1
-    ports:
-      - "5005:5005"
+  # match_job:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./match_job.Dockerfile
+  #   image: match_job:1.0
+  #   restart: always
+  #   depends_on:
+  #     - student
+  #     - module
+  #     - job
+  #   environment:
+  #     student_URL: http://student:5001/
+  #     module_URL: http://module:5000/
+  #     job_URL: http://job:5002/
+  #     PYTHONUNBUFFERED: 1
+  #   ports:
+  #     - "5005:5005"
 
   ###################################
   # Course: The Course microservice
@@ -68,8 +68,8 @@ services:
   course:
     build:
       context: ./
-      dockerfile: course\course.Dockerfile
-    image: g6t1/course:esd
+      dockerfile: ./course.Dockerfile
+    image: course:1.0
     restart: always
     environment:
       dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/course
@@ -81,8 +81,8 @@ services:
   apply_job:
     build:
       context: ./
-      dockerfile: apply_job\apply_job.Dockerfile
-    image: g6t1/apply_job:esd
+      dockerfile: ./apply_job.Dockerfile
+    image: apply_job:esd
     restart: always
     depends_on:
       - student
@@ -93,7 +93,7 @@ services:
       student_URL: http://student:5001/
       module_URL: http://module:5000/
       job_URL: http://job:5002/
-      course_URL: http://course:5003
+      course_URL: http://course:5003/
       PYTHONUNBUFFERED: 1
     ports:
       - "5006:5006"
