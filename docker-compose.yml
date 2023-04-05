@@ -1,13 +1,7 @@
 version: "3.8"
 
 volumes:
-  pgdata: 
-  kongadata:
   rabbitmq_data:
-
-networks:
-  kong-net:
-    driver: bridge
 
 services:
   ###################################
@@ -86,9 +80,6 @@ services:
       dockerfile: ./match_job.Dockerfile
     image: match_job:1.0
     restart: always
-    # extends:
-    #   file: docker-compose-student.yml
-    #   service: student
     depends_on:
       - module
       - job
@@ -110,11 +101,8 @@ services:
     build:
       context: ./
       dockerfile: ./apply_job.Dockerfile
-    image: apply_job:esd
+    image: apply_job:1.0
     restart: always
-    # extends:
-    #   file: docker-compose-student.yml
-    #   service: student
     depends_on:
       - job
       - module
@@ -140,9 +128,6 @@ services:
       dockerfile: ./create_job.Dockerfile
     image: create_job:1.0
     restart: always
-    # extends:
-    #   file: docker-compose-student.yml
-    #   service: student
     depends_on:
       - job
       - rabbitmq
@@ -153,7 +138,7 @@ services:
       jobURL: http://job:5002/
       PYTHONUNBUFFERED: 1
     ports:
-      - "5100:5100"
+      - "5007:5007"
 
 
   ###############################################
