@@ -206,7 +206,7 @@ def post_resume(student_id, job_id, resume):
             path = "/" + student_id + "_" + job_id
 
             headers = {
-            'Authorization': 'Bearer sl.BbrM4lMJ5eOKlenEzSawDGeDlr4ndX4BE7xbgkjgryQybbbYeFrPBucrguud4xGXVmYyiXbEn_s7GpCaQMgSLNquoE3c6wfYX2adegAsL8BAEF5umD17TC1RxHcLkdtwPDYrjSk',
+            'Authorization': 'Bearer sl.Bb-oDML-7CjIRkPNO7UEXnHqfrQs4oYNQAmnDM73F3arwDMaXcOWNmFT138tw_5RtEqugcpC6OPuH7uJbh7WcbbxzXEsMb10AspaOG2kO7QAPjDk1a-OxTmv41C1Yw5_J0tHsGI',
             'Dropbox-API-Arg': '{"autorename":false,"mode":"add","mute":false,"path":"'+ path +'.pdf","strict_conflict":false}',
             'Content-Type': 'application/octet-stream'
             }
