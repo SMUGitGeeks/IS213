@@ -89,16 +89,16 @@ def match(student_id):
 
     # Get all module skills
     for module_id in student_modules_list:
-        module_query = "query { get_module_skills (module_id: \"" + module_id + "\") { module_skills { skill_name } success errors } }"
+        module_query = "query { get_module_skill (module_id: \"" + module_id + "\") { module_skills { skill_name } success errors } }"
         data = {
             'query': module_query
         }
         module_skills_data = invoke_http(module_URL + 'graphql', method='POST', json=data)
 
-        if not module_skills_data['data']['get_module_skills']['success']:
+        if not module_skills_data['data']['get_module_skill']['success']:
             return invoke_error_microservice(module_skills_data, "module")
 
-        skills_data += module_skills_data['data']['get_module_skills']['module_skills']
+        skills_data += module_skills_data['data']['get_module_skill']['module_skills']
 
     # Create list of student skills
     student_skills_list = []
