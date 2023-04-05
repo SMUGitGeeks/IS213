@@ -99,6 +99,7 @@ def add_job(record):
     job_role = record['job_role']
     job_description = record['job_description']
     job_company = record['job_company']
+    api_key = record['api_key']
 
     job_mutation = "mutation{ create_job(job_role:\"" + job_role + "\", job_description: \"" + job_description + "\", job_company:\"" + job_company + "\"){ job{ job_id } success errors }}"
 
@@ -106,10 +107,14 @@ def add_job(record):
         'query': job_mutation
     }
 
+    headers = {
+            'api-key': api_key
+            }
+
     print('\n-----Adding new job record in job database-----')
 
-    try:
-        job_data = invoke_http(job_URL + 'graphql', method='POST', json=data)
+    try: 
+        job_data = invoke_http(job_URL + 'graphql', headers = headers, method='POST', json=data)
         print(job_data)
         print(f"job successfully added")
         job_id = job_data['result']['data']['create_job']['job']['job_id']
@@ -262,9 +267,7 @@ def send_to_email():
     new_jobs.clear_list()
 
     amqp_setup.check_setup()
-
-    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="send.notify", body=message,
-                                     properties=pika.BasicProperties(delivery_mode=2))
+    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="send.notify", body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
 
 
 # Execute this program if it is run as a main script (not by 'import')
