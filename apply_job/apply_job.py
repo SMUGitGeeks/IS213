@@ -202,6 +202,7 @@ def get_suitability(student_id, job_id):
 
 @app.route('/apply/<string:student_id>/<string:job_id>', methods=['POST'])
 def post_resume(student_id, job_id, resume):
+        amqp_setup.check_setup()
         try:
             # takes the resume
             file = resume

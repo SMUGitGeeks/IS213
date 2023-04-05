@@ -32,7 +32,7 @@ email_URL = "http://localhost:5008/"
  # ====================== Get Jobs from UI ======================
 @app.route("/create_job", methods=['POST'])
 def create_job():
-
+    amqp_setup.check_setup()
     if request.is_json:
         try:
             newjob_record = request.get_json()
@@ -91,7 +91,7 @@ def create_job():
 def add_job(record):
     # -> send new job to job microservice 
     # -> receive status 
-
+    amqp_setup.check_setup()
     print('\n------------ Invoking job microservice ------------')
 
     # ====================== add new job record ======================
@@ -210,6 +210,7 @@ def add_job(record):
 
 @app.route("/send_email", methods=['POST'])
 def send_to_email():
+    amqp_setup.check_setup()
     print('\n------------ Invoking student microservice ------------')
     # ====================== Get list of emails ======================
     email_query = """

@@ -18,6 +18,7 @@ module_URL = environ.get('module_URL') or "http://localhost:5000/" or input("Ent
 
 @app.route('/<string:student_id>')
 def check_student(student_id):
+    amqp_setup.check_setup()
     try:
         if student_id:
             print('\n-----Invoking student microservice-----')
@@ -64,6 +65,7 @@ def check_student(student_id):
 
 @app.route('/match/<string:student_id>')
 def get_job(student_id):
+    amqp_setup.check_setup()
     try:
         if student_id:
             # try:
@@ -100,6 +102,7 @@ def get_job(student_id):
 
 
 def match(student_id):
+    amqp_setup.check_setup()
     try:
         print('\n-----Invoking student microservice-----')
         # Get Student Modules ==================================
@@ -147,7 +150,7 @@ def match(student_id):
         print('\n-----Invoking module microservice-----')
         skills_data = []
 
-        # Get   all module skills
+        # Get all module skills
         for module_id in student_modules_list:
             module_query = "query { get_module_skills (module_id: \"" + module_id +"\") { module_skills { skill_name } success errors } }"
             data = {
