@@ -5,10 +5,7 @@ from ariadne import load_schema_from_path, make_executable_schema, graphql_sync,
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-from module_models import db
-from module_queries import resolve_module, resolve_modules, resolve_module_skills, resolve_create_module, \
-    resolve_update_module, resolve_delete_module, resolve_create_module_skill, resolve_update_module_skill, \
-    resolve_delete_module_skill
+from module_queries import *
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
@@ -48,6 +45,63 @@ def graphql_server():
     status_code = 200 if success else 400
     return jsonify(result), status_code
 
+@app.route('/module/<string:module_id>')
+def get_module(module_id):
+    module = Module.query.get(module_id)
+    if module:
+        return jsonify(
+            {
+                "code": 200,
+                "data": module.to_dict()
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "data": {
+                "module_id": module_id
+            },
+            "message": "Module not found."
+        }
+    ), 404
+
+@app.route('/modules')
+def get_modules():
+    modules = Module.query.all()
+    if len(modules):
+        return jsonify(
+            {
+                "code": 200,
+                "data": [module.to_dict() for module in modules]
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "data": {},
+            "message": "No modules found."
+        }
+    ), 404
+
+@app.route('/module/<string:module_id>/skills')
+def get_skills_by_module(module_id):
+    skills = ModuleSkill.query.filter_by(module_id=module_id).all()
+    if len(skills):
+        return jsonify(
+            {
+                "code": 200,
+                "data": [skill.to_dict() for skill in skills]
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "data": {
+                "module_id": module_id
+            },
+            "message": "Module not found."
+        }
+    ), 404
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)
