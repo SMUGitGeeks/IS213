@@ -21,7 +21,7 @@ connection = pika.BlockingConnection(
 channel = connection.channel()
 # Set up the exchange if the exchange doesn't exist
 # - use a 'topic' exchange to enable interaction
-exchangename="error_topic"
+exchangename="boss_finder"
 exchangetype="topic"
 channel.exchange_declare(exchange=exchangename, exchange_type=exchangetype, durable=True)
 
