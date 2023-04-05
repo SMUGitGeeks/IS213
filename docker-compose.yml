@@ -1,8 +1,7 @@
 version: "3.8"
 
 volumes:
-  pgdata: 
-  kongadata:
+  rabbitmq_data:
 
 networks:
   kong-net:
@@ -79,11 +78,7 @@ services:
       dockerfile: ./match_job.Dockerfile
     image: match_job:1.0
     restart: always
-    extends:
-      file: docker-compose-student.yml
-      service: student
     depends_on:
-      - student
       - module
       - job
     environment:
@@ -103,11 +98,7 @@ services:
       dockerfile: ./apply_job.Dockerfile
     image: apply_job:esd
     restart: always
-    extends:
-      file: docker-compose-student.yml
-      service: student
     depends_on:
-      - student
       - job
       - module
       - course
@@ -129,11 +120,7 @@ services:
       dockerfile: ./create_job.Dockerfile
     image: create_job:1.0
     restart: always
-    extends:
-      file: docker-compose-student.yml
-      service: student
     depends_on:
-      - student
       - job
       - rabbitmq
     environment:
@@ -141,9 +128,10 @@ services:
       rabbit_port: 5672
       studentURL: http://student:5001/
       jobURL: http://job:5002/
+      createJobURL: http://localhost:5007/
       PYTHONUNBUFFERED: 1
     ports:
-      - "5100:5100"
+      - "5007:5007"
 
 
   ###############################################
