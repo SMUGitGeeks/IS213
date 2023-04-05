@@ -15,15 +15,15 @@ ALTER TABLE job AUTO_INCREMENT=1;
 
 INSERT INTO `job` (`job_role`, `job_company`, `job_description`) VALUES
 ('Software Developer Intern', 'ABC Pte Ltd', 'Work on various projects as a member of a software development team, collaborate with team members to create software solutions'),
-('Data Analyst Intern', 'XYZ Pte Ltd', 'Assist in collecting and analyzing data, create vi' ),
-('Cybersecurity Analyst Intern', 'DEF Pte Ltd', 'Participate in vulnerability assessments and penet' ),
-('IT Support Intern', 'GHI Pte Ltd', 'Provide technical support to end-users, troublesho' ),
-('Web Developer Intern', 'JKL Pte Ltd', 'Work on website development projects, build and ma' ),
-('Network Engineer Intern', 'MNO Pte Ltd', 'Assist in the configuration and maintenance of net' ),
-('Software Testing Intern', 'PQR Pte Ltd', 'Help create and execute test plans, document and r'),
-('UI/UX Designer Intern', 'STU Pte Ltd', 'Work on designing user interfaces and user experie' ),
-('Cloud Computing Intern', 'VWX Pte Ltd', 'Assist in the deployment and management of cloud i'),
-('Artificial Intelligence Intern', 'YZA Pte Ltd', 'Participate in AI research and development project' );
+('Data Analyst Intern', 'XYZ Pte Ltd', 'Assist in collecting and analyzing data, create visualizations and reports to communicate findings' ),
+('Cybersecurity Analyst Intern', 'DEF Pte Ltd', 'Participate in vulnerability assessments and penetration testing, help implement security solutions' ),
+('IT Support Intern', 'GHI Pte Ltd', 'Provide technical support to end-users, troubleshoot and resolve issues with hardware and software' ),
+('Web Developer Intern', 'JKL Pte Ltd', 'Work on website development projects, build and maintain web pages using HTML, CSS and JavaScript' ),
+('Network Engineer Intern', 'MNO Pte Ltd', 'Assist in the configuration and maintenance of network infrastructure, troubleshoot network issues' ),
+('Software Testing Intern', 'PQR Pte Ltd', 'Help create and execute test plans, document and report software defects'),
+('UI/UX Designer Intern', 'STU Pte Ltd', 'Work on designing user interfaces and user experiences, create wireframes and prototypes' ),
+('Cloud Computing Intern', 'VWX Pte Ltd', 'Assist in the deployment and management of cloud infrastructure, implement cloud solutions'),
+('Artificial Intelligence Intern', 'YZA Pte Ltd', 'Participate in AI research and development projects, help create machine learning models' );
 
 
 DROP TABLE IF EXISTS `jobskill`;
