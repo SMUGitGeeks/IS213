@@ -39,7 +39,7 @@ channel.queue_bind(exchange=exchangename, queue=queue_name, routing_key='*.notif
 # any routing_key with two words and ending with '.error' will be matched
 
 ############   Error queue    #############
-#delcare Error queue
+# delcare Error queue
 queue_name = 'Error'
 channel.queue_declare(queue=queue_name, durable=True)
 # 'durable' makes the queue survive broker restarts
