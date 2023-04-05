@@ -54,7 +54,7 @@
                             </tr>
                             <tr v-for="course in courses">
                                 <td>
-                                    <a :href="course['course_link']"></a>{{ course['course_name'] }}
+                                    <a :href="course['course_link']" target="_blank">{{ course['course_name'] }}</a>
                                 </td>
                             </tr>
                             <tr v-for="no in test">
