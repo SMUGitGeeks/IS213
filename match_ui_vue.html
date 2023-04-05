@@ -109,6 +109,50 @@
                 >
                 </job-component>
             </div>
+
+            <!-- <div class="form-popup" id="myForm">
+                <form action="" class="form-container">
+
+                  <div class="row" v-show="!suitability">
+
+                    <table>
+                        <th>You are missing some skills. The skills are:</th>
+                        <tr v-for="skill in lack_skills">
+                            {{ skill }}
+                        </tr>
+                        <tr>Here are some courses you can take</tr>
+                        <tr v-for="course in courses">
+                            {{ course.course_name }} <br>
+                            {{ course.course_link }}
+                        </tr>
+
+                    </table>
+
+                    <p>Would you still like to proceed with the application?</p>
+                     basically on clicking then will pop up the input resume
+                        like idk on click then proceed=true my brain not braining
+                    <button type="button" class="btn btn-success">Yes</button>
+                    
+                    <button type="button" class="btn btn-danger" @click="closeForm()">No</button>
+
+                  </div>
+                  <div class="row">
+                    Student ID: <input v-model="student_id" placeholder="Insert StudentID">                  
+                  <input type="file" id="resume" name="resume" v-show="suitability or proceed">
+                  </div>
+                    
+                  <div class="row">
+                    <button type="submit" class="btn" @click="sendResume(resume)">Submit</button>
+                  </div>
+                  
+                  
+                </form>
+              </div>
+              <div>
+                <p v-if="uploadText !== ''" v-model="uploadText">
+                    {{ uploadText }}
+                </p>
+              </div> -->
         </div>
     </div>
 
@@ -132,11 +176,14 @@
                     jobs_data: [],
                     courses: [],
                     modules: [],
+                    lack_skills: [],
                     temp_link: 'https://google.com',
                     hasSearched: false,
                     isSearching: false,
                     hasError: false,
-                    suitability: false,
+                    isSuitable: false,
+                    proceed: false,
+                    uploadText: false,
                     message: "There is a problem retrieving data, please try again later."
                 };
             },
@@ -195,44 +242,60 @@
                                 });
                 },
                 applyJobs () {
-                    console.log(this.job_id)
-                    actual_job_id = this.job_id - 1
-                    const response =
-                            fetch(`${apply_job_URL}/apply/${this.student_id}/${actual_job_id}`)
-                                .then(response => response.json())
-                                .then(data => {
-                                    console.log(data);
-                                    if (data.code === 200) {
-                                        this.suitability = data.message;
-                                        this.jobs_data = data.data
-                                    }
+                    console.log(this.jobs)
+                //     console.log(this.job_id)
+                //     actual_job_id = this.job_id - 1
+                //     const response =
+                //             fetch(`${apply_job_URL}/apply/${this.student_id}/${actual_job_id}`)
+                //                 .then(response => response.json())
+                //                 .then(data => {
+                //                     console.log(data);
+                //                     if (data.code === 200) {
+                //                         this.isSuitable = data.message;
+                //                         this.jobs_data = data.data
+                //                     }
 
-                                    if (this.suitability) {
-                                        // is suitable
-
-                                    }
-                                    else {
-                                        // is not suitable
-                                        this.lack_skills = data.lack_skills
-                                        this.courses = data.courses 
-                                        if (data.modules) {
-                                            this.modules = data.modules
-                                        }
-                                        
-                                    }
-                                })
-                                .catch(error => {
-                                    // Errors when calling the service; such as network error, 
-                                    // service offline, etc
-                                    console.log(this.message + error);
-                                    this.hasError = true
-                                });
+                //                     if (this.suitability) {
+                //                         // is suitable
+                //                         this.proceed = true 
+                //                         openForm()
+                //                     }
+                //                     else {
+                //                         // is not suitable
+                //                         this.lack_skills = data.lack_skills
+                //                         this.courses = data.courses 
+                //                     }
+                //                 })
+                //                 .catch(error => {
+                //                     // Errors when calling the service; such as network error, 
+                //                     // service offline, etc
+                //                     console.log(this.message + error);
+                //                     this.hasError = true
+                //                 });
                 },
-                openForm () {
-
-                }
-
-            },
+                // openForm () {
+                //     document.getElementById("myForm").style.display = "block";
+                // }, 
+                // closeForm () {
+                //     document.getElementById("myForm").style.display = "none";
+                // },
+                sendResume (file, studentID, jobID) {
+                    studentID = this.student_id
+                    jobID = this.job_id
+                    // const response =
+                    //         fetch(`${apply_job_URL}/apply/${studentID}/${jobID}`)
+                    //             .then(response => response.json())
+                    //             .then(data => {
+                    //                 console.log(data);
+                    //                 uploadText = data
+                    //             })
+                    //             .catch(error => {
+                    //                 // Errors when calling the service; such as network error, 
+                    //                 // service offline, etc
+                    //                 console.log(this.message + error);
+                    //                 this.hasError = true
+                    //             })
+                }},
             created () {
                 // on Vue instance created, load the book list
                 this.getAllJobs();
@@ -254,7 +317,7 @@
                         </div>
                         <div class="col">
                             <button type="button" class="btn btn-sm btn-primary text-center" @click="applyJobs()">Apply</button>
-                            <p>{{ id }}</p>
+                            <p display="none">{{ id }}</p>
                         </div>
                         
                     </div>
