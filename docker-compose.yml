@@ -1,8 +1,5 @@
 version: "3.8"
 
-volumes:
-  rabbitmq_data:
-  
 services:
  
   ###################################
@@ -44,20 +41,6 @@ services:
       dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/module
       PYTHONUNBUFFERED: 1
 
-  ####################################
-  # RabbitMQ: The messaging broker   
-  ####################################
-  rabbitmq:
-    image: rabbitmq:3-management
-    hostname: esd-rabbit
-    restart: always
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes: 
-      - rabbitmq_data:/var/lib/rabbitmq
-
-
   ###############################################
   # Match job: The Match job microservice
   ###############################################
@@ -72,8 +55,6 @@ services:
       - module
       - job
     environment:
-      rabbit_host: rabbitmq
-      rabbit_port: 5672
       student_URL: http://student:5001/
       module_URL: http://module:5000/
       job_URL: http://job:5002/
