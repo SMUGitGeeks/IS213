@@ -36,7 +36,7 @@
         <div v-else>
             
             <div class="row">
-                    <div class="row" v-show="!hasproceed">
+                    <div class="row" v-if="!hasproceed">
                         <div class="row">
                             <h2>Let's check your skills sets</h2>
                         </div>
@@ -70,7 +70,7 @@
                         </p>
                         
                     </div>
-                    <div v-show="hasproceed" class="w-75 mx-auto pb-5">
+                    <div v-else class="w-75 mx-auto pb-5">
                         <div class="row">
                             <h2>You are ready to apply</h2>
                         </div>
@@ -139,9 +139,12 @@
             },
             methods: {
                 checkProceed () {
-                    console.log('test')
-                    if (this.courses === [] && (this.lack_skills === [] || this.lack_skills === ['']) && this.modules === []) {
+                    console.log(this.courses.length)
+                    console.log(this.modules.length)
+                    if (this.courses == 0 && this.modules == 0) {
                         this.hasproceed = true
+                    } else {
+                        this.hasproceed = false
                     }
                     console.log('proceed: '+ this.hasproceed)
                 },
