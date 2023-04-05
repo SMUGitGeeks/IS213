@@ -35,11 +35,11 @@ def resolve_students(obj, info):
 def resolve_create_student(obj, info, student_id, student_name, email, is_graduated, is_subscribed):
     try:
         student = Student(
-            student_id=student_id, 
-            student_name = student_name,
-            email = email,
-            is_graduated = is_graduated,
-            is_subscribed = is_subscribed
+            student_id=student_id,
+            student_name=student_name,
+            email=email,
+            is_graduated=is_graduated,
+            is_subscribed=is_subscribed
         )
         db.session.add(student)
         db.session.commit()
@@ -70,7 +70,7 @@ def resolve_update_student(obj, info, student_id, student_name=None, email=None,
 
             if (is_subscribed != None):
                 student.is_subscribed = is_subscribed
-            
+
             db.session.commit()
             payload = {
                 "success": True,
@@ -103,7 +103,7 @@ def resolve_student_modules(obj, info, student_id=None):
     try:
         student_modules = StudentModule.query.all()
         if student_id:
-            student_modules = StudentModule.query.filter_by(student_id = student_id)
+            student_modules = StudentModule.query.filter_by(student_id=student_id)
         payload = {
             "success": True,
             "student_modules": student_modules
@@ -114,6 +114,7 @@ def resolve_student_modules(obj, info, student_id=None):
             "errors": [str(error)]
         }
     return payload
+
 
 def resolve_student_module(obj, info, student_id, module_id):
     try:
@@ -128,6 +129,7 @@ def resolve_student_module(obj, info, student_id, module_id):
             "errors": [str(error)]
         }
     return payload
+
 
 def resolve_create_student_module(obj, info, student_id, module_id):
     try:

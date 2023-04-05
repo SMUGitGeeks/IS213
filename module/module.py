@@ -1,9 +1,9 @@
+from os import environ
+
 from ariadne import load_schema_from_path, make_executable_schema, graphql_sync, snake_case_fallback_resolvers, \
     ObjectType
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from os import environ
-from sqlalchemy import create_engine
 
 from module_models import db
 from module_queries import resolve_module, resolve_modules, resolve_module_skills, resolve_create_module, \
@@ -17,7 +17,6 @@ app.app_context().push()
 db.init_app(app)
 db.create_all()
 CORS(app)
-
 
 # We need to assign the resolvers to the corresponding fields in the Query and Mutation types
 query = ObjectType("Query")
@@ -48,6 +47,7 @@ def graphql_server():
     )
     status_code = 200 if success else 400
     return jsonify(result), status_code
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

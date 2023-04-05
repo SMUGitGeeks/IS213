@@ -14,7 +14,7 @@ app_secret = "v4qvy9gam785dvy"
 authorization_url = "https://www.dropbox.com/oauth2/authorize?client_id=%s&response_type=code" % app_key
 
 # send the user to the authorization URL:
-print ('Go to the following URL and allow access:')
+print('Go to the following URL and allow access:')
 print(authorization_url)
 
 # get the authorization code from the user:

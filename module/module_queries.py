@@ -3,7 +3,7 @@ from module_models import Module, ModuleSkill, db
 
 # We need to have a resolver for each query and mutation we have defined in module.graphql
 
-#get 1 specific module
+# get 1 specific module
 def resolve_module(obj, info, module_id):
     try:
         module = Module.query.get(module_id)
@@ -18,12 +18,14 @@ def resolve_module(obj, info, module_id):
         }
     return payload
 
-#get all modules (get modules base on skills)
+
+# get all modules (get modules base on skills)
 def resolve_modules(obj, info, skill_name=None):
     try:
         if skill_name:
             # get modules from Module table based on skill_name from ModuleSkill table
-            modules = [module.to_dict() for module in Module.query.join(ModuleSkill).filter(ModuleSkill.skill_name == skill_name).all()]
+            modules = [module.to_dict() for module in
+                       Module.query.join(ModuleSkill).filter(ModuleSkill.skill_name == skill_name).all()]
             payload = {
                 "success": True,
                 "modules": modules
@@ -41,7 +43,8 @@ def resolve_modules(obj, info, skill_name=None):
         }
     return payload
 
-#create a module
+
+# create a module
 def resolve_create_module(obj, info, module_id, module_name):
     try:
         module = Module(
@@ -60,7 +63,8 @@ def resolve_create_module(obj, info, module_id, module_name):
         }
     return payload
 
-#update a module
+
+# update a module
 def resolve_update_module(obj, info, module_id, module_name):
     try:
         module = Module.query.get(module_id)
@@ -78,7 +82,8 @@ def resolve_update_module(obj, info, module_id, module_name):
         }
     return payload
 
-#delete a module
+
+# delete a module
 def resolve_delete_module(obj, info, module_id):
     try:
         module = Module.query.get(module_id)
@@ -93,11 +98,13 @@ def resolve_delete_module(obj, info, module_id):
         }
     return payload
 
-#get all module skills (get skills base on modules)
+
+# get all module skills (get skills base on modules)
 def resolve_module_skills(obj, info, module_id=None):
     try:
         if module_id:
-            module_skills = [module_skill.to_dict() for module_skill in ModuleSkill.query.filter_by(module_id=module_id).all()]
+            module_skills = [module_skill.to_dict() for module_skill in
+                             ModuleSkill.query.filter_by(module_id=module_id).all()]
             payload = {
                 "success": True,
                 "module_skills": module_skills
@@ -115,7 +122,8 @@ def resolve_module_skills(obj, info, module_id=None):
         }
     return payload
 
-#create a module skill for a module
+
+# create a module skill for a module
 def resolve_create_module_skill(obj, info, module_id, skill_name):
     try:
         module_skill = ModuleSkill(
@@ -134,10 +142,11 @@ def resolve_create_module_skill(obj, info, module_id, skill_name):
         }
     return payload
 
-#update a module skill for a module
+
+# update a module skill for a module
 def resolve_update_module_skill(obj, info, module_id, old_skill, new_skill):
     try:
-        #update old skill to new skill
+        # update old skill to new skill
         module_skill = ModuleSkill.query.filter_by(module_id=module_id, skill_name=old_skill).first()
         if module_skill and new_skill:
             module_skill.skill_name = new_skill
@@ -154,7 +163,8 @@ def resolve_update_module_skill(obj, info, module_id, old_skill, new_skill):
         }
     return payload
 
-#delete a module skill for a module
+
+# delete a module skill for a module
 def resolve_delete_module_skill(obj, info, module_id, skill_name):
     try:
         module_skill = ModuleSkill.query.filter_by(module_id=module_id, skill_name=skill_name).first()
