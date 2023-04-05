@@ -19,9 +19,6 @@ student_URL = environ.get('studentURL')
 job_URL = environ.get('jobURL')
 module_URL = environ.get('moduleURL')
 course_URL = environ.get('courseURL')
-error_URL = environ.get('errorURL')
-
-
 
 @app.route('/apply/<string:student_id>/<string:job_id>', methods=['GET'])
 def get_suitability(student_id, job_id):
@@ -36,8 +33,6 @@ def get_suitability(student_id, job_id):
             'query': student_modules_query 
         }
         student_modules_data = invoke_http(student_URL + 'graphql', method='POST', json=data)
-        # if not student_modules_data['data']['get_student_modules']['success']:
-        #     return invoke_error_microservice(student_modules_data, "student")
          
          # Create list of student modules
         student_modules = student_modules_data['data']['get_student_modules']['student_modules']
@@ -56,8 +51,6 @@ def get_suitability(student_id, job_id):
                 'query': module_query
             }
             module_skills_data = invoke_http(module_URL + 'graphql', method='POST', json=data)
-            # if not module_skills_data['data']['get_module_skills']['success']:
-            #     return invoke_error_microservice(module_skills_data, "module")
             module_skills = module_skills_data['data']['get_module_skills']['module_skills']
 
             # Create list of module skills
@@ -73,8 +66,6 @@ def get_suitability(student_id, job_id):
             'query': job_skills_query
         }
         job_skills_data = invoke_http(job_URL + 'graphql', method='POST', json=data)
-        # if not job_skills_data['result']['data']['get_job_skills']['success']:
-        #     return invoke_error_microservice(job_skills_data, "job")
         job_skills = job_skills_data['result']['data']['get_job_skills']['job_skills']
 
         # Create job skill list
@@ -102,8 +93,6 @@ def get_suitability(student_id, job_id):
                 'query': student_query
             }
             student_data = invoke_http(student_URL + 'graphql', method='POST', json=data)
-            # if not student_data['data']['get_student']['success']:
-            #     return invoke_error_microservice(student_data, "student")
             is_graduated = student_data['data']['get_student']['student']['is_graduated']
 
             # if student is not graduated, look for modules to learn those skills
@@ -119,8 +108,6 @@ def get_suitability(student_id, job_id):
                         'query': module_query
                     }
                     module_data = invoke_http(module_URL + 'graphql', method='POST', json=data)
-                    # if not module_data['data']['get_modules']['success']:
-                    #     return invoke_error_microservice(module_data, "module")
                     modules_data += module_data['data']['get_modules']['modules']
 
                 # Create list of unqiue modules that student has not taken but needed for the job
@@ -140,8 +127,6 @@ def get_suitability(student_id, job_id):
                     'query': course_query
                 }
                 course_data = invoke_http(course_URL + 'graphql', method='POST', json=data)
-                # if not course_data['data']['get_courses']['success']:
-                #     return invoke_error_microservice(course_data, "course")
                 courses_data += course_data['data']['get_courses']['courses']
 
             # Create list of unqiue courses

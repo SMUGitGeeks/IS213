@@ -5,10 +5,7 @@ from ariadne import load_schema_from_path, make_executable_schema, graphql_sync,
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-from course_models import db
-from course_queries import resolve_course, resolve_courses, resolve_course_skills, resolve_create_course, \
-    resolve_update_course, resolve_delete_course, resolve_create_course_skill, resolve_update_course_skill, \
-    resolve_delete_course_skill
+from course_queries import *
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
@@ -47,6 +44,23 @@ def graphql_server():
     )
     status_code = 200 if success else 400
     return jsonify(result), status_code
+
+@app.route('/courses')
+def get_courses():
+    courses = Course.query.all()
+    if courses:
+        return jsonify(
+            {
+                "code": 200,
+                "data": [course.to_dict() for course in courses]
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "No courses found"
+        }
+    )
 
 
 if __name__ == '__main__':
