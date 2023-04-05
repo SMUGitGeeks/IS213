@@ -17,8 +17,6 @@ CORS(app)
 student_URL = environ.get('studentURL')
 job_URL = environ.get('jobURL')
 module_URL = environ.get('moduleURL')
-error_URL = environ.get('errorURL')
-
 
 @app.route('/match/<string:student_id>')
 def get_job(student_id):

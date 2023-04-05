@@ -17,8 +17,6 @@ CORS(app)
 student_URL = environ.get('studentURL')
 job_URL = environ.get('jobURL')
 email_URL = environ.get('emailURL')
-error_URL = environ.get('errorURL')
-
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 1. Create Job Microservice Steps
