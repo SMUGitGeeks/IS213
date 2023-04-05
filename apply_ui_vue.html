@@ -81,12 +81,15 @@
                             <input type="file" id="resume" name="resume" />
                         </div>
                         
-                        <div class="row">
-                            <button type="submit" class="btn btn-success" @click="sendResume()">Submit</button>
+                        <div class="row" v-if="!submitted">
+                            <button type="submit" class="btn btn-success" @click="postResume()">Submit</button>
                         </div>
-                        <p v-if="uploadText !== ''">
+                        <div class="row text-center" v-else>
+                            Submitted
+                        </div>
+                        <!-- <p v-if="uploadText !== ''">
                             {{ uploadText }}
-                        </p>
+                        </p> -->
                     </div>
                     
             </div>
@@ -109,14 +112,13 @@
         job_id= sessionStorage.getItem("apply_jobID")
         courses= sessionStorage.getItem("apply_courses") !== 'undefined' ? JSON.parse(sessionStorage.getItem("apply_courses")) : []
         modules= sessionStorage.getItem("apply_modules") !== 'undefined' ? JSON.parse(sessionStorage.getItem("apply_modules")) : []
-        lack_skills= sessionStorage.getItem("apply_lack_skills") !== null ? sessionStorage.getItem("apply_lack_skills").split(',') : ''
+        lack_skills= sessionStorage.getItem("apply_lack_skills") !== null ? sessionStorage.getItem("apply_lack_skills").split(',') : []
         isValidStudent= sessionStorage.getItem("isValidStudent")
         console.log(student_id, job_id)
         console.log(courses)
         console.log(lack_skills)
         console.log(modules)
         console.log(isValidStudent)
-        hasproceed = courses !== [] && lack_skills !== [] && modules !== []
         
 
         const app = Vue.createApp({
@@ -128,45 +130,46 @@
                     modules: modules,
                     lack_skills: lack_skills,
                     hasError: false,
-                    hasproceed: hasproceed,
+                    hasproceed: false,
                     uploadText: '',
                     isValidStudent: isValidStudent,
+                    submitted: false,
                     message: "There is a problem retrieving data, please try again later.",
                 };
             },
             methods: {
+                checkProceed () {
+                    console.log('test')
+                    if (this.courses === [] && (this.lack_skills === [] || this.lack_skills === ['']) && this.modules === []) {
+                        this.hasproceed = true
+                    }
+                    console.log('proceed: '+ this.hasproceed)
+                },
                 proceed() {
                     this.hasproceed = true
                 },
-                sendResume () {
-                    formData = new FormData();
-                    formData.append('file', document.getElementById('resume').files[0]);
-                    const response =
-                            fetch(`${apply_job_URL}/apply/${this.student_id}/${this.job_id}`, {
-                                    Method: 'POST',
-                                    Headers: {
-                                        Accept: 'application.json',
-                                    },
-                                    Body: formData,
-                                    Cache: 'default'
-                                    })
-                                .then(response => {
-                                    if (!response.ok) {
-                                    throw new Error("Network response was not ok");
-                                    }
-                                    return response.json();
-                                    this.uploadText = response.jso
-                                })
-                                .then(data => {
-                                    console.log(data);
-                                })
-                                .catch(error => {
-                                    // Errors when calling the service; such as network error, 
-                                    // service offline, etc
-                                    console.log(this.message + error);
-                                    this.hasError = true
-                                })
-                },
+                postResume() {
+                    const file = document.getElementById('resume').files[0];
+                    const url = "https://content.dropboxapi.com/2/files/upload";
+                    const path = `/${this.student_id}_${this.job_id}.pdf`;
+                    const headers = {
+                        'Authorization': 'Bearer sl.Bb-oDML-7CjIRkPNO7UEXnHqfrQs4oYNQAmnDM73F3arwDMaXcOWNmFT138tw_5RtEqugcpC6OPuH7uJbh7WcbbxzXEsMb10AspaOG2kO7QAPjDk1a-OxTmv41C1Yw5_J0tHsGI',
+                        'Dropbox-API-Arg': JSON.stringify({"autorename":false,"mode":"add","mute":false,"path":`${path}`,"strict_conflict":false}),
+                        'Content-Type': 'application/octet-stream'
+                    };
+                    const config = {
+                        method: 'POST',
+                        headers: headers,
+                        body: new Blob([file])
+                    };
+                    const response = 
+                        fetch(url, config)
+                        .then(response => {
+                            console.log(response.json());
+                            this.submitted = true;
+                        })
+                        .catch(error => console.log(error));
+                    },
                 checkStudent() {
                     const response =
                             fetch(`${match_job_URL}/${this.student_id}`)
@@ -190,6 +193,10 @@
                                     this.hasError = true
                                 })
                 },
+            },
+            created () {
+                // on Vue instance created, load the job list
+                this.checkProceed();
             },
         });
 
