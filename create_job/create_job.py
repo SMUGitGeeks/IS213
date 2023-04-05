@@ -95,6 +95,7 @@ def add_job(record):
     job_role = record['job_role']
     job_description = record['job_description']
     job_company = record['job_company']
+    api_key = record['api_key']
 
 
     job_mutation = "mutation{ create_job(job_role:\"" +job_role+ "\", job_description: \"" +job_description+ "\", job_company:\"" +job_company+ "\"){ job{ job_id } success errors }}"
@@ -103,10 +104,14 @@ def add_job(record):
             'query': job_mutation
             }
 
+    headers = {
+            'api-key': api_key
+            }
+
     print('\n-----Adding new job record in job database-----')
 
     try: 
-        job_data = invoke_http(job_URL + 'graphql', method='POST', json=data)
+        job_data = invoke_http(job_URL + 'graphql', headers = headers, method='POST', json=data)
         print(job_data)
 
         # ADD ERROR CODE HERE
