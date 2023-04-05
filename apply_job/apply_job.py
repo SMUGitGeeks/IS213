@@ -211,6 +211,7 @@ def post_resume(student_id, job_id, resume):
         amqp_setup.check_setup()
         try:
             # takes the resume
+            return(resume)
             file = resume
             url = "https://content.dropboxapi.com/2/files/upload"
 
@@ -245,7 +246,7 @@ def post_resume(student_id, job_id, resume):
             amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"resume.error", 
                 body=message, properties=pika.BasicProperties(delivery_mode = 2))
             
-            return jsonify({
+            return json({
                 "code": 500,
                 "message": "apply_job.py internal error: " + ex_str
             }), 500
