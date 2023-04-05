@@ -261,6 +261,8 @@ def send_to_email():
 
     new_jobs.clear_list()
 
+    amqp_setup.check_setup()
+
     amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="send.notify", body=message,
                                      properties=pika.BasicProperties(delivery_mode=2))
 
@@ -268,7 +270,7 @@ def send_to_email():
 # Execute this program if it is run as a main script (not by 'import')
 if __name__ == "__main__":
     print("This is flask " + os.path.basename(__file__) + " for placing an order...")
-    app.run(host="0.0.0.0", port=5100, debug=True)
+    app.run(host="0.0.0.0", port=5007, debug=True)
 
 ## new python file
 
