@@ -5,6 +5,9 @@ import os, sys
 from os import environ
 
 from invokes import invoke_http
+import amqp_setup
+import pika
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -29,9 +32,6 @@ def check_student(student_id):
                 'query': student_query
             }
             student_data = invoke_http(student_URL + 'graphql', method='POST', json=data)
-
-            if not student_data['data']['get_student']['success']:
-                return invoke_error_microservice(student_data, "student")
             print('student_id: ' + student_id)
         
         return jsonify({
@@ -41,34 +41,57 @@ def check_student(student_id):
     
     except Exception as e:
         # Unexpected error in code
+        print(f"\n\n-----Invoking error microservice as student fails.-----")
+        print(f"-----Publishing the error message with routing_key=student.error-----")
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
         print(ex_str)
 
+        code = 500
+        message = json.dumps({
+            "code": code,
+            "message": "match_job.py internal error: " + ex_str
+        })
+
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"student.error", 
+        body=message, properties=pika.BasicProperties(delivery_mode = 2))
+
         return jsonify({
             "code": 500,
-            "message": "Failed to invoke Student microservice"
+            "message": "match_job.py internal error: " + ex_str
         }), 500
 
 @app.route('/match/<string:student_id>')
 def get_job(student_id):
-    if student_id:
-        # try:
-        result = match(student_id)
-        # return jsonify(result), result["code"]
-        return result
-        # except Exception as e:
-        #     # Unexpected error in code
-        #     exc_type, exc_obj, exc_tb = sys.exc_info()
-        #     fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        #     ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
-        #     print(ex_str)
+    try:
+        if student_id:
+            # try:
+            result = match(student_id)
+            # return jsonify(result), result["code"]
+            return result
+    except Exception as e:
+        # Unexpected error in code
+        print(f"\n\n-----Invoking error microservice as job fails.-----")
+        print(f"-----Publishing the error message with routing_key=job.error-----")
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
+        print(ex_str)
 
-        #     return jsonify({
-        #         "code": 500,
-        #         "message": "internal error: " + ex_str
-        #     }), 500
+        code = 500
+        message = json.dumps({
+            "code": code,
+            "message": "match_job.py internal error: " + ex_str
+        })
+
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"job.error", 
+        body=message, properties=pika.BasicProperties(delivery_mode = 2))
+        
+        return jsonify({
+            "code": 500,
+            "message": "match_job.py internal error: " + ex_str
+        }), 500
         
     return jsonify({
         "code": 400,
@@ -88,13 +111,8 @@ def match(student_id):
         student_modules_data = invoke_http(student_URL + 'graphql', method='POST', json=data)
         student_modules = student_modules_data['data']['get_student_modules']['student_modules']
 
-        if not student_modules_data['data']['get_student_modules']['success']:
-            return invoke_error_microservice(student_modules_data, "student")
-
         # ++++ USING REST API +++++
         # student_modules_result = invoke_http(student_URL + 'students/' + student_id + '/modules')
-        # if student_modules_result['code'] != 200:
-        #     return invoke_error_microservice(student_modules_result, 'student')
         # student_modules = student_modules_result['data']
 
         # Create list of modules
@@ -104,18 +122,26 @@ def match(student_id):
         print('student_modules: ' + str(student_modules_list))
 
     except Exception as e:
+        print(f"\n\n-----Invoking error microservice as student fails.-----")
+        print(f"-----Publishing the error message with routing_key=student.error-----")
         # Unexpected error in code
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
         print(ex_str)
+        code = 500
+        message = json.dumps({
+            "code": code,
+            "message": "match_job.py internal error: " + ex_str
+        })
 
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"student.error", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2))
+        
         return jsonify({
             "code": 500,
-            "message": "Failed to invoke Student microservice"
+            "message": "match_job.py internal error: " + ex_str
         }), 500
-
-
 
     try: 
         print('\n-----Invoking module microservice-----')
@@ -128,10 +154,6 @@ def match(student_id):
                 'query': module_query
             }
             module_skills_data = invoke_http(module_URL + 'graphql', method='POST', json=data)
-
-            if not module_skills_data['data']['get_module_skills']['success']:
-                return invoke_error_microservice(module_skills_data, "module")
-            
             skills_data += module_skills_data['data']['get_module_skills']['module_skills']
 
         # Create list of student skills
@@ -143,17 +165,26 @@ def match(student_id):
         print('student_skills: ' + str(student_skills_list))
     
     except Exception as e:
+        print(f"\n\n-----Invoking error microservice as module fails.-----")
+        print(f"-----Publishing the error message with routing_key=module.error-----")        
         # Unexpected error in code
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
         print(ex_str)
+        code = 500
+        message = json.dumps({
+            "code": code,
+            "message": "match_job.py internal error: " + ex_str
+        })
 
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"module.error", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2))
+        
         return jsonify({
             "code": 500,
-            "message": "Failed to invoke Module microservice"
+            "message": "match_job.py internal error: " + ex_str
         }), 500
-
 
     try:
         print('\n-----Invoking job microservice-----')
@@ -167,11 +198,6 @@ def match(student_id):
                 'query': jobs_query
             }
             jobs_data = invoke_http(job_URL + 'graphql', method='POST', json=data)
-
-            # Error micro invoked ============
-            if not jobs_data['result']['data']['get_jobs']['success']:
-                return invoke_error_microservice(jobs_data, "job")
-            
             jobs = jobs_data['result']['data']['get_jobs']['jobs']
 
             if jobs != []:
@@ -220,29 +246,27 @@ def match(student_id):
         }
 
     except Exception as e:
+        print(f"\n\n-----Invoking error microservice as job fails.-----")
+        print(f"-----Publishing the error message with routing_key=job.error-----")
         # Unexpected error in code
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
         print(ex_str)
+        code = 500
+        message = json.dumps({
+            "code": code,
+            "message": "match_job.py internal error: " + ex_str
+        })
 
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"job.error", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2))
+        
         return jsonify({
             "code": 500,
-            "message": "Failed to invoke job microservice"
-        }), 500
+            "message": "match_job.py internal error: " + ex_str
+        }), 500        
 
-def invoke_error_microservice(json, microservice):
-    print(f'\n\n-----Invoking error microservice as {microservice} fails-----')
-    # invoke_http(error_URL, method="POST", json=json)
-    # - reply from the invocation is not used; 
-    print("Sent to the error microservice:", json)
-
-    # 7. Return error
-    return {
-            "code": 500,
-            "data": json,
-            "message": f"{microservice} failed, sent for error handling. {str(json['errors'])}"
-        }
 
 
 if __name__ == "__main__":

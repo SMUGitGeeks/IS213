@@ -20,8 +20,6 @@ course_URL = environ.get('course_URL') or "http://localhost:5003/"
 @app.route('/apply/<string:student_id>/<string:job_id>', methods=['GET'])
 def get_suitability(student_id, job_id):
     amqp_setup.check_setup()
-    queue_name = 'Error'
-
     try:
         # 1. Get student's modules by graphql
         print("------------------------------------")
