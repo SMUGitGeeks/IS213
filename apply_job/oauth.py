@@ -4,7 +4,7 @@
 
 # 2. replace authorization code placeholder below with the code from step #1. 
 # 3. run the following python code 
-
+from os import environ
 import requests
 
 app_key = "slittbfjy2ckrmn"
@@ -18,7 +18,7 @@ print('Go to the following URL and allow access:')
 print(authorization_url)
 
 # get the authorization code from the user:
-authorization_code = '<placeholder>'
+authorization_code = 'Authorization code here'
 # authorization_code = 'GBTvNZzMglYAAAAAAAAADbfRe0aAgawHcjhiNp6hW9c'
 
 

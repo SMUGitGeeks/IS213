@@ -7,6 +7,7 @@
 
 import json
 import os
+from os import environ
 import amqp_setup
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
@@ -61,7 +62,7 @@ def send_email(email_list, email_string):
             html_content=email_string
             )
 
-    sg = SendGridAPIClient('')
+    sg = SendGridAPIClient(environ.get('sendgridAPIKey'))
     response = sg.send(message)
 
 
