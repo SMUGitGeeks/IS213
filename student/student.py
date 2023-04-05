@@ -47,8 +47,8 @@ def graphql_server():
     return jsonify(result), status_code
 
 
-@app.route('/students/<string:student_id>/modules')
-def find_by_student_id(student_id):
+@app.route('/student/<string:student_id>/modules')
+def get_modules_by_student(student_id):
     modules = StudentModule.query.filter_by(student_id=student_id).all()
     if len(modules):
         return jsonify(
@@ -67,6 +67,23 @@ def find_by_student_id(student_id):
         }
     ), 404
 
+@app.route('/students/subscription')
+def get_students_by_subscription():
+    students = Student.query.filter_by(is_subscribed=True).all()
+    if len(students):
+        return jsonify(
+            {
+                "code": 200,
+                "data": [student.to_dict() for student in students]
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "data": {},
+            "message": "No students found."
+        }
+    ), 404
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5001, debug=True)
