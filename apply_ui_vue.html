@@ -112,14 +112,13 @@
         job_id= sessionStorage.getItem("apply_jobID")
         courses= sessionStorage.getItem("apply_courses") !== 'undefined' ? JSON.parse(sessionStorage.getItem("apply_courses")) : []
         modules= sessionStorage.getItem("apply_modules") !== 'undefined' ? JSON.parse(sessionStorage.getItem("apply_modules")) : []
-        lack_skills= sessionStorage.getItem("apply_lack_skills") !== null ? sessionStorage.getItem("apply_lack_skills").split(',') : ''
+        lack_skills= sessionStorage.getItem("apply_lack_skills") !== null ? sessionStorage.getItem("apply_lack_skills").split(',') : []
         isValidStudent= sessionStorage.getItem("isValidStudent")
         console.log(student_id, job_id)
         console.log(courses)
         console.log(lack_skills)
         console.log(modules)
         console.log(isValidStudent)
-        hasproceed = courses !== [] && lack_skills !== [] && modules !== []
         
 
         const app = Vue.createApp({
@@ -131,7 +130,7 @@
                     modules: modules,
                     lack_skills: lack_skills,
                     hasError: false,
-                    hasproceed: hasproceed,
+                    hasproceed: false,
                     uploadText: '',
                     isValidStudent: isValidStudent,
                     submitted: false,
@@ -139,110 +138,15 @@
                 };
             },
             methods: {
+                checkProceed () {
+                    console.log('test')
+                    if (this.courses === [] && this.lack_skills === [] && this.modules === []) {
+                        this.hasproceed = true
+                    }
+                    console.log('proceed: '+ this.hasproceed)
+                },
                 proceed() {
                     this.hasproceed = true
-                },
-                sendResume () {
-                    // formData = new FormData();
-                    // formData.append('file', document.getElementById('resume').files[0]);
-                    // formData.append('submit_student_id', this.student_id);
-                    // formData.append('submit_job_id', this.job_id);
-                    // console.log(document.getElementById('resume'))
-                    // console.log(formData)
-                    // const file = document.getElementById('resume').files[0];
-                    // console.log(file);
-                    // console.log(this.student_id)
-
-                    // const reader = new FileReader();
-                    // reader.readAsDataURL(file);
-                    // reader.onload = function () {
-                    //     const fileData = reader.result.split(',')[1];
-
-                    //     const data = {
-                    //         file: fileData
-                    //     };
-
-                    //     fetch(`${apply_job_URL}/apply/${this.student_id}/${this.job_id}`, {
-                    //         method: 'POST',
-                    //         headers: {
-                    //         'Content-Type': 'application/json'
-                    //         },
-                    //         body: JSON.stringify(data)
-                    //     })
-                    //     .then(response => {
-                    //     if (!response.ok) {
-                    //             throw new Error("Network response was not ok");
-                    //         }
-                    //         return response.json();
-                    //     })
-                    //     .then(data => {
-                    //             console.log(data);
-                    //             console.log("test " + this.uploadText)
-                    //             })
-                    //     .catch(error => {
-                    //         // Errors when calling the service; such as network error, 
-                    //         // service offline, etc
-                    //         console.log(this.message + error);
-                    //         this.hasError = true
-                    //     })
-                    // };
-                    // const response =
-                    //     fetch(`${apply_job_URL}/apply/${this.student_id}/${this.job_id}`, {
-                    //             Method: 'POST',
-                    //             Headers: {
-                    //                 Accept: 'application.json',
-                    //             },
-                    //             Body: {data: {'student_id': this.student_id, 'job_id':this.job_id, 'resume':document.getElementById('resume').files[0]}},
-                    //             Cache: 'default'
-                    //             })
-                    //         .then(response => {
-                    //             if (!response.ok) {
-                    //                 throw new Error("Network response was not ok");
-                    //             }
-                    //             console.log(response.text())
-                    //             return response.text();
-                    //         })
-                    //         .then(data => {
-                    //             console.log(data);
-                    //             console.log("test " + this.uploadText)
-                    //         })
-                    //         .catch(error => {
-                    //             // Errors when calling the service; such as network error, 
-                    //             // service offline, etc
-                    //             console.log(this.message + error);
-                    //             this.hasError = true
-                    //         })
-                    // axios.post(`${apply_job_URL}/apply/${this.student_id}/${this.job_id}`, {data: {'student_id': this.student_id, 'job_id':this.job_id, 'resume':document.getElementById('resume').files[0]}}, {
-                    //     headers: {
-                    //         Accept: 'application/json',
-                    //         'Content-Type': 'multipart/form-data',
-                    //     },
-                    // })
-                    //     .then(response => {
-                    //         console.log(response.data);
-                    //         console.log("test " + this.uploadText);
-                    //     })
-                    //     .catch(error => {
-                    //         // Errors when calling the service; such as network error, 
-                    //         // service offline, etc
-                    //         console.log(this.message + error);
-                    //         this.hasError = true;
-                    //     });
-                    
-
-                    // const xhr = new XMLHttpRequest();
-                    // const url = `${apply_job_URL}/apply/${this.student_id}/${this.job_id}`;
-
-                    // xhr.open('POST', url);
-                    // xhr.setRequestHeader('Content-Type', 'multipart/form-data');
-                    // xhr.onload = function() {
-                    // if (xhr.status === 200) {
-                    //     console.log('Request successful');
-                    // } else {
-                    //     console.log('Request failed');
-                    // }
-                    // };
-                    // xhr.send(JSON.stringify({data: {'student_id': this.student_id, 'job_id':this.job_id, 'resume':document.getElementById('resume').files[0]}}));
                 },
                 postResume() {
                     const file = document.getElementById('resume').files[0];
@@ -289,6 +193,10 @@
                                     this.hasError = true
                                 })
                 },
+            },
+            created () {
+                // on Vue instance created, load the job list
+                this.checkProceed();
             },
         });
 
