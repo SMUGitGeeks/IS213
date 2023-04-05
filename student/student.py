@@ -67,6 +67,7 @@ def get_modules_by_student(student_id):
         }
     ), 404
 
+
 @app.route('/students/subscription')
 def get_students_by_subscription():
     students = Student.query.filter_by(is_subscribed=True).all()
@@ -84,6 +85,7 @@ def get_students_by_subscription():
             "message": "No students found."
         }
     ), 404
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5001, debug=True)

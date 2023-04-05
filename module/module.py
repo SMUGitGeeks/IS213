@@ -45,6 +45,7 @@ def graphql_server():
     status_code = 200 if success else 400
     return jsonify(result), status_code
 
+
 @app.route('/module/<string:module_id>')
 def get_module(module_id):
     module = Module.query.get(module_id)
@@ -65,6 +66,7 @@ def get_module(module_id):
         }
     ), 404
 
+
 @app.route('/modules')
 def get_modules():
     modules = Module.query.all()
@@ -82,6 +84,7 @@ def get_modules():
             "message": "No modules found."
         }
     ), 404
+
 
 @app.route('/module/<string:module_id>/skills')
 def get_skills_by_module(module_id):
@@ -102,6 +105,7 @@ def get_skills_by_module(module_id):
             "message": "Module not found."
         }
     ), 404
+
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000, debug=True)

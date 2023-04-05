@@ -1,19 +1,17 @@
-
-
 const create_job_URL = "http://localhost:5007/create_job"
 
-const app = Vue.createApp( {
+const app = Vue.createApp({
 
     //=========== DATA PROPERTIES ===========
     data() {
         return {
             job_role: "",
-            job_company: "",        
+            job_company: "",
             job_description: "",
-            new_skill: "",       
+            new_skill: "",
             skills: [],
             job_added: false,
-            add_job_error: "" ,
+            add_job_error: "",
             api_key: ""
         }
     },
@@ -56,11 +54,11 @@ const app = Vue.createApp( {
                         this.job_description = ""
                         this.job_company = ""
                         this.api_key = ""
-                        this.skills = [] 
+                        this.skills = []
 
-                      } else {
+                    } else {
                         this.add_job_error = data.message;
-                      }
+                    }
 
                 })
         },
@@ -68,7 +66,7 @@ const app = Vue.createApp( {
         delete_skill(i) {
             this.skills.splice(i, 1)
         }
-        
+
     }
 })
 

@@ -4,7 +4,6 @@
 
 # 2. replace authorization code placeholder below with the code from step #1. 
 # 3. run the following python code 
-from os import environ
 import requests
 
 app_key = "slittbfjy2ckrmn"

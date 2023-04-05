@@ -8,9 +8,11 @@
 import json
 import os
 from os import environ
-import amqp_setup
+
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
+
+import amqp_setup
 
 monitorBindingKey = '*.notify'
 
@@ -52,15 +54,15 @@ def processEmailInfo(email_info):
         email_string += '<tr><th>' + new_job_id + '</th><td>' + new_job_role + '</td><td>' + new_job_description + '</td><td>' + new_job_company + '</td></tr>'
     email_string += '</table>'
     send_email(email_list, email_string)
-    
+
 
 def send_email(email_list, email_string):
     message = Mail(
-            from_email='glen.low.2021@scis.smu.edu.sg',
-            to_emails=email_list,
-            subject='New Jobs This Month!',
-            html_content=email_string
-            )
+        from_email='glen.low.2021@scis.smu.edu.sg',
+        to_emails=email_list,
+        subject='New Jobs This Month!',
+        html_content=email_string
+    )
 
     sg = SendGridAPIClient(environ.get('sendgridAPIKey'))
     response = sg.send(message)
