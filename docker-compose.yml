@@ -15,7 +15,7 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
-    volumes: 
+    volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
   ###################################
@@ -133,7 +133,7 @@ services:
     ports:
       - "5006:5006"
 
-###############################################
+  ###############################################
   # Create job: The Create job microservice
   ###############################################
   create_job:
@@ -150,6 +150,7 @@ services:
       rabbit_port: 5672
       studentURL: http://student:5001/
       jobURL: http://job:5002/
+      createJobURL: http://localhost:5007/
       PYTHONUNBUFFERED: 1
     ports:
       - "5007:5007"

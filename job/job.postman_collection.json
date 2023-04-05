@@ -1,130 +1,130 @@
 {
-	"info": {
-		"_postman_id": "66b2f698-5e5c-4b8b-8506-c442905f8a1e",
-		"name": "job",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "12606116"
-	},
-	"item": [
-		{
-			"name": "Job - Create",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": "localhost:5002/graphql",
-				"body": {
-					"mode": "graphql",
-					"graphql": {
-						"query": "mutation { create_job(job_id: \"0\", job_role: \"Software Developer Intern\", job_description: \"Work on various projects as a member of a software development team, collaborate with team members to create software solutions\", job_company: \"ABC Pte Ltd\") { success errors } }"
-					}
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Job - Delete",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": "localhost:5002/graphql",
-				"body": {
-					"mode": "graphql",
-					"graphql": {
-						"query": "mutation { delete_job(job_id: \"0\") { success errors } }"
-					}
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Job - Get All",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": "localhost:5002/graphql",
-				"body": {
-					"mode": "graphql",
-					"graphql": {
-						"query": "query { get_jobs { jobs { job_id job_role job_description job_company } } }"
-					}
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Job - Get a job given id",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": "localhost:5002/graphql",
-				"body": {
-					"mode": "graphql",
-					"graphql": {
-						"query": "query { get_job(job_id: \"0\") { job { job_id job_role job_description job_company } } }"
-					}
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Jobskill - Create",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": "localhost:5002/graphql",
-				"body": {
-					"mode": "graphql",
-					"graphql": {
-						"query": "mutation { create_job_skill(job_id: \"0\", skill_name: \"CSS\") { success errors } }"
-					}
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Jobskill - Delete a jobskill given id and skill name",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": "localhost:5002/graphql",
-				"body": {
-					"mode": "graphql",
-					"graphql": {
-						"query": "mutation { delete_job_skill(job_id: \"0\", skill_name: \"CSS\") { success errors } }"
-					}
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Jobskill - Get all jobskills given job_id",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": "localhost:5002/graphql",
-				"body": {
-					"mode": "graphql",
-					"graphql": {
-						"query": "query { get_job_skills(job_id: \"0\") { job_skills { job_id skill_name } success error } }"
-					}
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Job - Get all job_id given jobskill",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": "localhost:5002/graphql",
-				"body": {
-					"mode": "graphql",
-					"graphql": {
-						"query": "query { get_jobs(skill_name:\"CSS\") { jobs { job_id job_role job_description job_company } } }"
-					}
-				}
-			},
-			"response": []
-		}
-	]
+  "info": {
+    "_postman_id": "66b2f698-5e5c-4b8b-8506-c442905f8a1e",
+    "name": "job",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "12606116"
+  },
+  "item": [
+    {
+      "name": "Job - Create",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "localhost:5002/graphql",
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation { create_job(job_id: \"0\", job_role: \"Software Developer Intern\", job_description: \"Work on various projects as a member of a software development team, collaborate with team members to create software solutions\", job_company: \"ABC Pte Ltd\") { success errors } }"
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Job - Delete",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "localhost:5002/graphql",
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation { delete_job(job_id: \"0\") { success errors } }"
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Job - Get All",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "localhost:5002/graphql",
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query { get_jobs { jobs { job_id job_role job_description job_company } } }"
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Job - Get a job given id",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "localhost:5002/graphql",
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query { get_job(job_id: \"0\") { job { job_id job_role job_description job_company } } }"
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Jobskill - Create",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "localhost:5002/graphql",
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation { create_job_skill(job_id: \"0\", skill_name: \"CSS\") { success errors } }"
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Jobskill - Delete a jobskill given id and skill name",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "localhost:5002/graphql",
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation { delete_job_skill(job_id: \"0\", skill_name: \"CSS\") { success errors } }"
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Jobskill - Get all jobskills given job_id",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "localhost:5002/graphql",
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query { get_job_skills(job_id: \"0\") { job_skills { job_id skill_name } success error } }"
+          }
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Job - Get all job_id given jobskill",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "localhost:5002/graphql",
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query { get_jobs(skill_name:\"CSS\") { jobs { job_id job_role job_description job_company } } }"
+          }
+        }
+      },
+      "response": []
+    }
+  ]
 }
