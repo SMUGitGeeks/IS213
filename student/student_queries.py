@@ -104,10 +104,11 @@ def resolve_student_modules(obj, info, student_id=None):
         student_modules = StudentModule.query.all()
         if student_id:
             student_modules = StudentModule.query.filter_by(student_id=student_id)
-        payload = {
-            "success": True,
-            "student_modules": student_modules
-        }
+            if student_modules:
+                payload = {
+                    "success": True,
+                    "student_modules": student_modules
+                }
     except Exception as error:
         payload = {
             "success": False,
@@ -119,10 +120,12 @@ def resolve_student_modules(obj, info, student_id=None):
 def resolve_student_module(obj, info, student_id, module_id):
     try:
         student_module = StudentModule.query.get((student_id, module_id))
-        payload = {
-            "success": True,
-            "student_module": student_module
-        }
+        print(student_module)
+        if student_module:
+            payload = {
+                "success": True,
+                "student_module": student_module
+            }
     except Exception as error:
         payload = {
             "success": False,

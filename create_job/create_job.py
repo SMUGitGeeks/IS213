@@ -18,6 +18,7 @@ student_URL = environ.get('studentURL')
 job_URL = environ.get('jobURL')
 email_URL = environ.get('emailURL')
 
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 1. Create Job Microservice Steps
 #   -> Job Creation
@@ -66,15 +67,15 @@ def create_job():
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
             print(ex_str)
-            
+
             code = 500
             message = json.dumps({
-            "code": code,
-            "message": "create_job.py internal error: " + ex_str
+                "code": code,
+                "message": "create_job.py internal error: " + ex_str
             })
 
-            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="create_job.error", 
-            body=message, properties=pika.BasicProperties(delivery_mode = 2))
+            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="create_job.error",
+                                             body=message, properties=pika.BasicProperties(delivery_mode=2))
 
             return jsonify({
                 "code": 500,
@@ -87,6 +88,7 @@ def create_job():
             "code": 400,
             "message": "Invalid JSON input: " + str(request.get_data())
         }), 400
+
 
 def add_job(record):
     # -> send new job to job microservice 
@@ -108,18 +110,18 @@ def add_job(record):
     }
 
     headers = {
-            'api-key': api_key
-            }
+        'api-key': api_key
+    }
 
     print('\n-----Adding new job record in job database-----')
 
-    try: 
-        job_data = invoke_http(job_URL + 'graphql', headers = headers, method='POST', json=data)
+    try:
+        job_data = invoke_http(job_URL + 'graphql', headers=headers, method='POST', json=data)
         print(job_data)
         print(f"job successfully added")
         job_id = job_data['result']['data']['create_job']['job']['job_id']
         print(job_id)
-                    
+
     except Exception as e:
         print(f"\n\n-----Invoking error microservice as create_job fails.-----")
         print(f"-----Publishing the error message with routing_key=create_job.error-----")
@@ -134,9 +136,9 @@ def add_job(record):
             "message": "create_job.py internal error: " + ex_str
         })
 
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"create_job.error", 
-            body=message, properties=pika.BasicProperties(delivery_mode = 2))
-        
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"create_job.error",
+                                         body=message, properties=pika.BasicProperties(delivery_mode=2))
+
         return jsonify({
             "code": 500,
             "message": "create_job.py internal error: " + ex_str
@@ -176,9 +178,9 @@ def add_job(record):
                 "message": "create_job.py internal error: " + ex_str
             })
 
-            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"job_skill.error", 
-                body=message, properties=pika.BasicProperties(delivery_mode = 2))
-            
+            amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"job_skill.error",
+                                             body=message, properties=pika.BasicProperties(delivery_mode=2))
+
             return jsonify({
                 "code": 500,
                 "message": "create_job.py internal error: " + ex_str
@@ -203,6 +205,7 @@ def add_job(record):
         "message": "Job added"
     }), 200
     # =================================================================
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # 2. Send Data to Email Microservice Steps
@@ -267,7 +270,8 @@ def send_to_email():
     new_jobs.clear_list()
 
     amqp_setup.check_setup()
-    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="send.notify", body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="send.notify", body=message,
+                                     properties=pika.BasicProperties(delivery_mode=2))
 
 
 # Execute this program if it is run as a main script (not by 'import')

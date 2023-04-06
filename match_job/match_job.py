@@ -3,20 +3,51 @@ import os
 import sys
 from os import environ
 
+import pika
 from flask import Flask, jsonify
 from flask_cors import CORS
 
-from invokes import invoke_http
 import amqp_setup
-import pika
-import json
+from invokes import invoke_http
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 student_URL = environ.get('studentURL')
 job_URL = environ.get('jobURL')
 module_URL = environ.get('moduleURL')
+
+
+@app.route('/<string:student_id>')
+def check_student(student_id):
+    try:
+        if student_id:
+            print('\n-----Invoking student microservice-----')
+            # Verify valid student_id ===============================
+            if not student_id.isnumeric():
+                return {
+                    'code': 400,
+                    'message': 'Invalid Student ID.'
+                }
+            student_query = "query { get_student (student_id:" + student_id + ") { student { student_id } success errors } }"
+            data = {
+                'query': student_query
+            }
+            student_data = invoke_http(student_URL + 'graphql', method='POST', json=data)
+            print('student_id: ' + student_id)
+
+        return jsonify({
+            "code": 200,
+            "data": student_data
+        }), 200
+
+    except Exception as e:
+        # Unexpected error in code
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        ex_str = str(e) + " at " + str(exc_type) + ": " + fname + ": line " + str(exc_tb.tb_lineno)
+        print(ex_str)
+
 
 @app.route('/match/<string:student_id>')
 def get_job(student_id):
@@ -42,14 +73,14 @@ def get_job(student_id):
             "message": "match_job.py internal error: " + ex_str
         })
 
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"job.error", 
-        body=message, properties=pika.BasicProperties(delivery_mode = 2))
-        
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"job.error",
+                                         body=message, properties=pika.BasicProperties(delivery_mode=2))
+
         return jsonify({
             "code": 500,
             "message": "match_job.py internal error: " + ex_str
         }), 500
-        
+
     return jsonify({
         "code": 400,
         "message": "Invalid Student_ID input: " + str(student_id)
@@ -93,21 +124,21 @@ def match(student_id):
             "message": "match_job.py internal error: " + ex_str
         })
 
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"student.error", 
-            body=message, properties=pika.BasicProperties(delivery_mode = 2))
-        
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"student.error",
+                                         body=message, properties=pika.BasicProperties(delivery_mode=2))
+
         return jsonify({
             "code": 500,
             "message": "match_job.py internal error: " + ex_str
         }), 500
 
-    try: 
+    try:
         print('\n-----Invoking module microservice-----')
         skills_data = []
 
         # Get all module skills
         for module_id in student_modules_list:
-            module_query = "query { get_module_skills (module_id: \"" + module_id +"\") { module_skills { skill_name } success errors } }"
+            module_query = "query { get_module_skills (module_id: \"" + module_id + "\") { module_skills { skill_name } success errors } }"
             data = {
                 'query': module_query
             }
@@ -121,10 +152,10 @@ def match(student_id):
             if skill not in student_skills_list:
                 student_skills_list.append(skill)
         print('student_skills: ' + str(student_skills_list))
-    
+
     except Exception as e:
         print(f"\n\n-----Invoking error microservice as module fails.-----")
-        print(f"-----Publishing the error message with routing_key=module.error-----")        
+        print(f"-----Publishing the error message with routing_key=module.error-----")
         # Unexpected error in code
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
@@ -136,9 +167,9 @@ def match(student_id):
             "message": "match_job.py internal error: " + ex_str
         })
 
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"module.error", 
-            body=message, properties=pika.BasicProperties(delivery_mode = 2))
-        
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"module.error",
+                                         body=message, properties=pika.BasicProperties(delivery_mode=2))
+
         return jsonify({
             "code": 500,
             "message": "match_job.py internal error: " + ex_str
@@ -217,14 +248,13 @@ def match(student_id):
             "message": "match_job.py internal error: " + ex_str
         })
 
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"job.error", 
-            body=message, properties=pika.BasicProperties(delivery_mode = 2))
-        
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key=f"job.error",
+                                         body=message, properties=pika.BasicProperties(delivery_mode=2))
+
         return jsonify({
             "code": 500,
             "message": "match_job.py internal error: " + ex_str
-        }), 500        
-
+        }), 500
 
 
 if __name__ == "__main__":

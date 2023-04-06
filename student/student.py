@@ -8,12 +8,13 @@ from flask_cors import CORS
 from student_queries import *
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+# app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://is213@host.docker.internal:3306/student'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.app_context().push()
 db.init_app(app)
 db.create_all()
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # We need to assign the resolvers to the corresponding fields in the Query and Mutation types
 query = ObjectType("Query")
@@ -67,6 +68,7 @@ def get_modules_by_student(student_id):
         }
     ), 404
 
+
 @app.route('/students/subscription')
 def get_students_by_subscription():
     students = Student.query.filter_by(is_subscribed=True).all()
@@ -85,5 +87,6 @@ def get_students_by_subscription():
         }
     ), 404
 
+
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    app.run(host="0.0.0.0", port=6001, debug=True)

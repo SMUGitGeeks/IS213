@@ -1,7 +1,7 @@
 version: "3"
 
 volumes:
-  pgdata: 
+  pgdata:
   kongadata:
 
 networks:
@@ -26,7 +26,7 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "kong"]
+      test: [ "CMD", "pg_isready", "-U", "kong" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -79,7 +79,7 @@ services:
     image: pantsel/konga
     restart: always
     networks:
-        - kong-net
+      - kong-net
     environment:
       DB_ADAPTER: postgres
       DB_HOST: kong-database

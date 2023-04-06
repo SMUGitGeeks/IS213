@@ -46,6 +46,7 @@ def graphql_server():
     # this part does not work
     return jsonify({"result": result, "code": status_code})
 
+
 @app.route('/jobs')
 def get_jobs():
     jobs = Job.query.all()
@@ -128,6 +129,7 @@ def get_jobs_by_skill(skill_name):
         }
     ), 404
 
+
 @app.route('/job', methods=['POST'])
 def create_job():
     job = Job(
@@ -151,6 +153,7 @@ def create_job():
             "message": "Job not created."
         }
     ), 400
+
 
 @app.route('/job/<string:job_id>', methods=['POST'])
 def create_job_skill(job_id):

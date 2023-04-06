@@ -3,11 +3,21 @@ version: "3.8"
 volumes:
   rabbitmq_data:
 
-networks:
-  kong-net:
-    driver: bridge
-
 services:
+
+  ####################################
+  # RabbitMQ: The messaging broker   
+  ####################################
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: esd-rabbit
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
   ###################################
   # module: The Module microservice
   ###################################
@@ -17,6 +27,8 @@ services:
       dockerfile: ./module.Dockerfile
     image: module:1.0
     restart: always
+    depends_on:
+      - rabbitmq
     environment:
       dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/module
       PYTHONUNBUFFERED: 1
@@ -32,6 +44,8 @@ services:
       dockerfile: ./job.Dockerfile
     image: job:1.0
     restart: always
+    depends_on:
+      - rabbitmq
     environment:
       dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/job
       PYTHONUNBUFFERED: 1
@@ -47,6 +61,8 @@ services:
       dockerfile: ./course.Dockerfile
     image: course:1.0
     restart: always
+    depends_on:
+      - rabbitmq
     environment:
       dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/course
       PYTHONUNBUFFERED: 1
@@ -81,7 +97,10 @@ services:
     depends_on:
       - module
       - job
+      - rabbitmq
     environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
       moduleURL: http://module:5000/
       studentURL: http://student:5001/
       jobURL: http://job:5002/
@@ -96,13 +115,16 @@ services:
     build:
       context: ./
       dockerfile: ./apply_job.Dockerfile
-    image: apply_job:esd
+    image: apply_job:1.0
     restart: always
     depends_on:
       - job
       - module
       - course
+      - rabbitmq
     environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
       moduleURL: http://module:5000/
       studentURL: http://student:5001/
       jobURL: http://job:5002/
@@ -111,7 +133,7 @@ services:
     ports:
       - "5006:5006"
 
-###############################################
+  ###############################################
   # Create job: The Create job microservice
   ###############################################
   create_job:
@@ -134,9 +156,9 @@ services:
       - "5007:5007"
 
 
-  ###############################################
+  ##############################################
   # Email: The Email microservice
-  ###############################################
+  ##############################################
   email:
     build:
       context: ./
@@ -149,17 +171,5 @@ services:
       rabbit_host: rabbitmq
       rabbit_port: 5672
       PYTHONUNBUFFERED: 1
+      sendgridAPIKey: APIKEY
 
-
-  ####################################
-  # RabbitMQ: The messaging broker   
-  ####################################
-  rabbitmq:
-    image: rabbitmq:3-management
-    hostname: esd-rabbit
-    restart: always
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    volumes: 
-      - rabbitmq_data:/var/lib/rabbitmq
