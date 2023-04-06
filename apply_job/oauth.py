@@ -35,4 +35,4 @@ print(r.text)
 # 4. copy text in access_token from the printed r.text
 # it should be long string starting with sl. 
 
-# 5. go to apply_jobs.py, replace this access_token in the placeholder in headers variable authorisation : bearer json data
+# 5. go to apply_ui_vue.html, replace this copied access_token in the placeholder in const headers authorisation : <token>

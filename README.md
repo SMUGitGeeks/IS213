@@ -29,7 +29,7 @@ Everything else:
 a. Generate an access code
 from [Dropbox Access Code Generator](https://www.dropbox.com/oauth2/authorize?client_id=slittbfjy2ckrmn&token_access_type=offline&response_type=code)
 
-b. Paste access code into line 21 of apply_job/oauth.py
+b. Paste access code into line 20 of apply_job/oauth.py
 
 `authorization_code = '<code>''`
 
@@ -37,7 +37,7 @@ c. Run the following command
 
 `python apply_job/oauth.py`
 
-d. Copy the access token and paste it into line 159 of apply_ui_vue.html
+d. Copy the access token and paste it into line 163 of apply_ui_vue.html
 
 `'Authorization': '<token>',`
 
