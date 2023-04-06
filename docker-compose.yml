@@ -171,4 +171,5 @@ services:
       rabbit_host: rabbitmq
       rabbit_port: 5672
       PYTHONUNBUFFERED: 1
+      sendgridAPIKey: APIKEY
 
